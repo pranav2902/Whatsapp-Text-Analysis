@@ -71,6 +71,8 @@ for fname in os.listdir(inputDir):
     if fname.endswith('.txt'):
         #text file will be opened
         f = open(inputDir+'/{}'.format(fname), mode='r', encoding='utf8')
+
+        #text file to which ouput will be written
         fout = open(outputDir+'/Output of {}'.format(fname), mode='w', encoding='utf8')
         print('Processing {}'.format(fname))
         #Total lines parsed
