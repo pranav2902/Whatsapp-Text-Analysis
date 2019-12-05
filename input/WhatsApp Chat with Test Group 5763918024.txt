@@ -26,3 +26,26 @@
 04/12/2019, 18:40 - Pranav Kamesh: Outside now ✌
 04/12/2019, 18:40 - Mahesh Jayasankar: Ok cool 👌🏽
 04/12/2019, 18:49 - Mahesh Jayasankar: ... On second thoughts it's against WhatsApp TOS to automate message-sending. I don't wanna get banned and neither do you 😅. We'll stick to brute messaging👌🏽
+04/12/2019, 18:52 - Mahesh Jayasankar: Also, one more thing you should test: 👌🏽
+04/12/2019, 18:53 - Mahesh Jayasankar: Kick me from group, send a series of messages and then add me again👌🏽
+04/12/2019, 18:53 - Mahesh Jayasankar: I want to see if my chat log picks all that up 👌🏽
+04/12/2019, 18:54 - Mahesh Jayasankar: If not then my theory about needing group creator to mail you the log will be correct 👌🏽
+04/12/2019, 19:36 - Pranav Kamesh: Haha ok lol ✌
+04/12/2019, 19:37 - Pranav Kamesh: Nope it won't ✌.I assure you
+04/12/2019, 19:38 - Pranav Kamesh: Yeah if you need the whole complete log that's the best thing to do. Even if we can't get it..we can use groups where we were cofounders ✌
+04/12/2019, 19:38 - Pranav Kamesh: Also need to make sure we use common messaging slang lol✌
+04/12/2019, 20:24 - Mahesh Jayasankar: Say, should we start a GitHub for this? 👌🏼
+04/12/2019, 20:25 - Pranav Kamesh: Yeah that's what I was planning ..to upload it to GitHub once it's done or something✌
+04/12/2019, 20:25 - Pranav Kamesh: Is that what you meant?
+04/12/2019, 21:00 - Mahesh Jayasankar: No dude
+04/12/2019, 21:00 - Mahesh Jayasankar: If we need to co-dev the project we need a repository we can both access
+04/12/2019, 21:01 - Mahesh Jayasankar: Since you're the one with the *professional experience* I thought you could set it up 😕
+04/12/2019, 21:01 - Mahesh Jayasankar: 👌🏼
+04/12/2019, 21:19 - Pranav Kamesh: Ah .sure
+04/12/2019, 21:19 - Pranav Kamesh: I'll set one up
+04/12/2019, 21:21 - Mahesh Jayasankar: <Media omitted>
+04/12/2019, 21:21 - Mahesh Jayasankar: We're gonna have to comb through image files as well👌🏼
+04/12/2019, 21:21 - Mahesh Jayasankar: So send some dummy attachments 👌🏼
+04/12/2019, 21:29 - Pranav Kamesh: No dude..if we export chat without media..No image files will be sent
+04/12/2019, 21:29 - Pranav Kamesh: So no issues✌
+04/12/2019, 21:40 - Mahesh Jayasankar: No but whether it will be output in the log that “at xx/xx/xxxx xx:xx:xx yyy sent zzz media file”? That's important for the parsing 👌🏼
