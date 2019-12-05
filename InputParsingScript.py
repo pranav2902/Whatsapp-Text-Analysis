@@ -1,8 +1,10 @@
 import os
+
 #-------------------------------
 #Directories
 #-------------------------------
-parentDir = 'input'
+inputDir = 'input'
+outputDir = 'output'
 
 #-------------------------------
 #Script parameters
@@ -14,9 +16,10 @@ shouldValidateLineDates = True
 #-------------------------------
 #Pre-processing
 #-------------------------------
-if not(os.path.exists(parentDir)):
-    os.makedirs(parentDir)
-
+if not(os.path.exists(inputDir)):
+    os.makedirs(inputDir)
+if not(os.path.exists(outputDir)):
+    os.makedirs(outputDir)
 #===============================
 #Utility functions
 #===============================
@@ -49,24 +52,26 @@ def ValidateLineName(linestr):
     linestr = linestr[20:]
     name_length = 0
     flag = False
+    #Searches for a semicolon to indicate where the message starts
     while(name_length < len(linestr)):
         if (linestr[name_length] == ':'):
             flag = True
             break
         name_length+=1
     if (flag == False):
-        return(False, 'null')
+        return(False, 'null', 'null')
     if (flag == True):
-        #Returns both the name of the sender and whether it is a valid message
-        return(True, linestr[:name_length])
+        #Returns whether name was detected, the name and the rest of the string
+        return(True, linestr[:name_length], linestr[name_length+1:])
 
 #===============================
 #Main control loop
 #===============================
-for fname in os.listdir(parentDir):
+for fname in os.listdir(inputDir):
     if fname.endswith('.txt'):
         #text file will be opened
-        f = open(parentDir+'/{}'.format(fname), mode='r', encoding='utf8')
+        f = open(inputDir+'/{}'.format(fname), mode='r', encoding='utf8')
+        fout = open(outputDir+'/Output of {}'.format(fname), mode='w', encoding='utf8')
         print('Processing {}'.format(fname))
         #Total lines parsed
         totalMsg = 0
@@ -78,10 +83,13 @@ for fname in os.listdir(parentDir):
         while(line):
             totalMsg+=1
             isDateValid = ValidateLineDate(line)
-            (isNameValid, name) = ValidateLineName(line)
+            (isNameValid, name, message) = ValidateLineName(line)
             if (isDateValid):
                 validDates += 1
                 if (isNameValid):
                     validMsg += 1
+                    fout.write(message)
             line = f.readline()
         print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
+        f.close()
+        fout.close()
