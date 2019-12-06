@@ -1,0 +1,5 @@
+is: 7
+this: 5
+class: 4
+to: 3
+it's: 3

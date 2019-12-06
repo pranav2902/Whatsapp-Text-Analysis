@@ -1,0 +1,5 @@
+monday: 2
+ig: 1
+he: 1
+meant: 1
+chill: 1

@@ -1,0 +1,5 @@
+the: 15
+is: 14
+have: 11
+for: 8
+to: 8

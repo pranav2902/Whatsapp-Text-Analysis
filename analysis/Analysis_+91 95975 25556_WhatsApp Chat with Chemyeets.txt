@@ -1,0 +1,5 @@
+the: 4
+is: 3
+Guys,: 2
+a: 2
+competition.: 2

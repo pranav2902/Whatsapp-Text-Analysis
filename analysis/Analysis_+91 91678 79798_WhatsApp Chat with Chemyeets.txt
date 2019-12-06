@@ -1,0 +1,5 @@
+the: 18
+have: 16
+we: 12
+in: 10
+slot: 9

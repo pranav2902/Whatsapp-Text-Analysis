@@ -1,0 +1,5 @@
+for: 10
+the: 8
+it: 8
+This: 7
+you: 6

@@ -1,0 +1,5 @@
+the: 5
+to: 4
+Happy: 3
+birthday!: 2
+Greetings: 2

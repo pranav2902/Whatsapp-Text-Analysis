@@ -1,0 +1,5 @@
+have: 5
+today?: 5
+Do: 4
+we: 4
+class: 4

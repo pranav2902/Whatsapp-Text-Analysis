@@ -32,6 +32,8 @@ if not(os.path.exists(analysisDir)):
 def ValidateLineDate(linestr):
     #The first 20 characters of the message correspond to the timestamp
     linestr = linestr[0:20]
+    if len(linestr) < 20:
+        return False
     flag = True
     if (linestr[2] != '/' or linestr[5] != '/'):
         flag = False

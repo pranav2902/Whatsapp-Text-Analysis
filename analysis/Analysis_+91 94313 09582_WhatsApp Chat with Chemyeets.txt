@@ -1,0 +1,5 @@
+have: 6
+cre: 6
+class: 5
+we: 5
+for: 3

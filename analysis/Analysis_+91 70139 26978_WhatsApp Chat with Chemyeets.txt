@@ -1,0 +1,5 @@
+the: 15
+to: 14
+in: 10
+slot: 9
+lab: 7

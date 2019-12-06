@@ -1,0 +1,5 @@
+Happy: 2
+birthday!: 2
+:): 1
+He: 1
+did: 1

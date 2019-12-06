@@ -1,0 +1,5 @@
+Happy: 2
+birthday: 2
+!!: 2
+Ok: 1
+Ramnathan: 1

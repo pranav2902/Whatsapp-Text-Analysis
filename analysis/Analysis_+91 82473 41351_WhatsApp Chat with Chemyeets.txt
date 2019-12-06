@@ -1,0 +1,5 @@
+Happy: 4
+birthday: 3
+🥳: 1
+holi🥳: 1
+Yes: 1

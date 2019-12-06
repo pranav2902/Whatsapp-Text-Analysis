@@ -1,0 +1,5 @@
+the: 11
+is: 10
+slot: 6
+No: 6
+What: 5
