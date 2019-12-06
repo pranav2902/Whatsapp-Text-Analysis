@@ -1,0 +1,25 @@
+Need a spam bot
+Perfect time to start researching how to spam on WhatsApp lmao
+Ok sounds good, I'll hit it up as well
+Also as a secondary utility we could rank the most used emojis; this is my favourite one 👌🏽👌🏽👌🏽
+I'll end all my sentences with that 👌🏽
+So make sure to use 👍🏽 emojis 😏😏 frequently 👌🏽
+Maybe insert a few as noise in your text 👌🏽
+Hey can you remove the emoji from group title and add some unique number sequence instead?
+👌🏽
+No I just realised if we are to use scripts, then we may need to have the group title as something typable👌🏽
+And the number sequence just because 👌🏽
+Ok cool 👌🏽
+... On second thoughts it's against WhatsApp TOS to automate message-sending. I don't wanna get banned and neither do you 😅. We'll stick to brute messaging👌🏽
+Also, one more thing you should test: 👌🏽
+Kick me from group, send a series of messages and then add me again👌🏽
+I want to see if my chat log picks all that up 👌🏽
+If not then my theory about needing group creator to mail you the log will be correct 👌🏽
+Say, should we start a GitHub for this? 👌🏼
+No dude
+If we need to co-dev the project we need a repository we can both access
+Since you're the one with the *professional experience* I thought you could set it up 😕
+👌🏼
+We're gonna have to comb through image files as well👌🏼
+So send some dummy attachments 👌🏼
+No but whether it will be output in the log that “at xx/xx/xxxx xx:xx:xx yyy sent zzz media file”? That's important for the parsing 👌🏼
