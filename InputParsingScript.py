@@ -1,11 +1,10 @@
 import os
-
+from collections import Counter
 #-------------------------------
 #Directories
 #-------------------------------
 inputDir = 'input'
-outputDir = 'output'
-
+fileDir = 'temp'
 #-------------------------------
 #Script parameters
 #-------------------------------
@@ -18,8 +17,9 @@ shouldValidateLineDates = True
 #-------------------------------
 if not(os.path.exists(inputDir)):
     os.makedirs(inputDir)
-if not(os.path.exists(outputDir)):
-    os.makedirs(outputDir)
+if not(os.path.exists(fileDir)):
+    os.makedirs(fileDir)
+
 #===============================
 #Utility functions
 #===============================
@@ -95,3 +95,18 @@ for fname in os.listdir(inputDir):
         print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
         f.close()
         fout.close()
+
+
+
+def analysemsg(filename):
+    for fname in os.listdir(fileDir):
+        if filename == fname:
+            # text file will be opened
+            with open(filename) as g:
+                coun = Counter(g.read().split())
+                for word,count in coun.most_common(5):
+                    print('%s: %d' % (word, count))
+
+
+
+
