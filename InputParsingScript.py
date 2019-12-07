@@ -1,11 +1,14 @@
 import os
 from collections import Counter
+import nltk
+from nltk.corpus import stopwords
 #-------------------------------
 #Directories
 #-------------------------------
 inputDir = 'input'
 fileDir = 'temp'
 analysisDir = 'analysis'
+stopDir = 'without_stop_words'
 #-------------------------------
 #Script parameters
 #-------------------------------
@@ -22,13 +25,14 @@ if not(os.path.exists(fileDir)):
     os.makedirs(fileDir)
 if not(os.path.exists(analysisDir)):
     os.makedirs(analysisDir)
+if not(os.path.exists(stopDir)):
+    os.makedirs(stopDir)
 
 #===============================
 #Utility functions
 #===============================
 
 #Check if the message starts with a date in the proper format
-#TODO Make it check whether the date is practically feasible, not important
 def ValidateLineDate(linestr):
     #The first 20 characters of the message correspond to the timestamp
     linestr = linestr[0:20]
@@ -74,7 +78,7 @@ def AnalyseMsgsFromFile(filename):
     print('Analysing file {}'.format(filename))
     fout = open(analysisDir+'/Analysis_{}'.format(filename),mode='w', encoding='utf8')
     # text file will be opened
-    with open(fileDir+'/'+filename, 'r', encoding='utf8') as g:
+    with open(stopDir+'/Filtered_'+filename, 'r', encoding='utf8') as g:
         coun = Counter(g.read().split())
         for word,count in coun.most_common(5):
             fout.write('%s: %d\n' % (word, count))
@@ -90,6 +94,20 @@ def IsIgnorableMsg(message):
         return True
     return False
 
+#Function should remove all stopwords that are present in the list of stopwords
+def RemoveStopWords(filename):
+    stop_Words = set(stopwords.words('english'))
+    g = open(fileDir+'/{}'.format(filename),mode='r',encoding='utf8')
+    line = g.readline()
+    appendfile = open(stopDir+'/Filtered_{}'.format(filename),mode = 'w',encoding = "utf8")
+    while line:
+        word = line.split()
+        for w in word:
+            if not w in stop_Words:
+                appendfile.write(" "+w)
+        appendfile.write('\n')
+        line = g.readline()
+    appendfile.close()
 
 #===============================
 #Main control loop
@@ -149,4 +167,5 @@ for fname in os.listdir(inputDir):
         #Analyses each file created as part of the processing
 
         for name in fout:
+            RemoveStopWords(name+'_'+fname)
             AnalyseMsgsFromFile(name+'_'+fname)
