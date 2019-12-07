@@ -1,5 +1,1 @@
-This: 9
-message: 9
-was: 9
-deleted: 9
 ✋: 1

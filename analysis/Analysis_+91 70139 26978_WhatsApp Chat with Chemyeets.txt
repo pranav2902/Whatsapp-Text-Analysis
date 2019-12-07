@@ -1,5 +1,5 @@
-the: 15
-to: 14
-in: 10
-slot: 9
-lab: 7
+the: 38
+in: 26
+for: 24
+to: 22
+and: 19

@@ -1,5 +1,5 @@
-the: 15
-is: 14
+the: 20
+is: 15
 have: 11
-for: 8
-to: 8
+to: 11
+for: 9

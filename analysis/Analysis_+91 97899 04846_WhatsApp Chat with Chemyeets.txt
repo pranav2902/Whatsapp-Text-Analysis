@@ -1,5 +1,5 @@
-the: 22
-for: 10
-to: 8
-you: 7
-in: 7
+the: 65
+to: 34
+of: 29
+for: 27
+and: 27

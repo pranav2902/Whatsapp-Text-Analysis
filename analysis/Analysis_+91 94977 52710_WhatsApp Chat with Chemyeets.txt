@@ -1,5 +1,5 @@
 for: 2
-This: 1
-message: 1
-was: 1
-deleted: 1
+D: 1
+slot: 1
+attendance: 1
+percentage: 1

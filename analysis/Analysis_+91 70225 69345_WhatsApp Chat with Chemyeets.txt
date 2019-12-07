@@ -2,4 +2,4 @@ the: 4
 I: 3
 have: 3
 to: 3
-This: 1
+spoken: 1

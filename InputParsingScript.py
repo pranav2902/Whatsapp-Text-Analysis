@@ -80,9 +80,13 @@ def AnalyseMsgsFromFile(filename):
             fout.write('%s: %d\n' % (word, count))
     print('Analysis complete. Output stored in {}'.format(analysisDir+'/Analysis_{}'.format(filename)))
 
-#Function should check whether the message sent was just a media message
+#Function should check whether the message sent was one of the few system generated messages:
+#<Media omitted> for when media was sent
+#This message was deleted for when original message sent was deleted
 def IsIgnorableMsg(message):
     if (message == "<Media omitted>\n"):
+        return True
+    if (message == "This message was deleted\n"):
         return True
     return False
 
@@ -107,6 +111,9 @@ for fname in os.listdir(inputDir):
         #Of which how many had been actually sent by a person
         validMsg = 0
         line = f.readline()
+        #variable that checks whether the current message is a continuation of a previous message
+        isContinuation = False
+        lastMsgSenderName = 'null'
         while(line):
             totalMsg+=1
             isDateValid = ValidateLineDate(line)
@@ -117,12 +124,22 @@ for fname in os.listdir(inputDir):
                 #Then checks if it has a valid name of sender
                 if (isNameValid):
                     validMsg += 1
+                    isContinuation = True
+                    lastMsgSenderName = name
+
                     #In that case, write the message into the corresponding text file of that sender
                     #If such a text file doesn't exist, create one
                     if name not in fout:
                         fout[name] = open(fileDir+'/{}_{}'.format(name, fname), mode='w', encoding='utf8')
                     if (not(IsIgnorableMsg(message))):
                         fout[name].write(message)
+                #If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
+                else:
+                    isContinuation = False
+            #If a valid timestamp doesn't exist, it means that the message is a continuation line of previously sent message
+            else:
+                if isContinuation:
+                    fout[lastMsgSenderName].write(line)
             line = f.readline()
         print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
         f.close()

@@ -1,5 +1,5 @@
-the: 8
-have: 7
-to: 5
-This: 5
-message: 5
+the: 15
+to: 10
+have: 8
+for: 7
+a: 6

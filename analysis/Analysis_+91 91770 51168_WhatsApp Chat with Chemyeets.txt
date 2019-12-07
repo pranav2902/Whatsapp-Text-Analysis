@@ -1,4 +1,0 @@
-This: 1
-message: 1
-was: 1
-deleted: 1

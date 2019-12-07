@@ -1,5 +1,5 @@
-the: 54
-to: 40
-and: 24
-for: 24
-is: 19
+the: 157
+to: 88
+of: 74
+and: 72
+for: 66

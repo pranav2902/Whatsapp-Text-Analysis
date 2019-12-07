@@ -1,5 +1,5 @@
 of: 3
-the: 3
-course: 2
-submit: 2
-in: 2
+course: 3
+class: 3
+to: 3
+in: 3

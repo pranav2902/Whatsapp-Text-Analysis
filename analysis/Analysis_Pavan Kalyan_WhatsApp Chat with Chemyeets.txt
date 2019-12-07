@@ -1,5 +1,5 @@
-This: 4
-message: 4
-was: 4
-deleted: 4
 Happy: 2
+birthday: 2
+!: 1
+mama: 1
+https://drive.google.com/drive/folders/1gdu7uowvDwLuPPgG_Or85-kcGUOD3Egh: 1

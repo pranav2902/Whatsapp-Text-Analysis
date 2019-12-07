@@ -1,5 +1,5 @@
 ?: 20
-the: 13
+the: 14
+have: 6
 class: 5
-to: 5
-it: 5
+in: 5

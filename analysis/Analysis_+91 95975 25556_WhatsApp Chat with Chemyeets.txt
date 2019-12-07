@@ -1,5 +1,5 @@
-the: 4
-is: 3
-Guys,: 2
-a: 2
-competition.: 2
+the: 27
+of: 16
+and: 14
+to: 12
+is: 11

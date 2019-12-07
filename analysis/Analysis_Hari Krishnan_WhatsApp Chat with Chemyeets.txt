@@ -1,5 +1,5 @@
-This: 3
-message: 3
-was: 3
-deleted: 3
 No: 2
+get: 1
+jio: 1
+E: 1
+slot: 1
