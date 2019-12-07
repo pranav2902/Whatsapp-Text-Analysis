@@ -85,12 +85,17 @@ def AnalyseMsgsFromFile(filename):
     print('Analysis complete. Output stored in {}'.format(analysisDir+'/Analysis_{}'.format(filename)))
 
 #Function should check whether the message sent was one of the few system generated messages:
-#<Media omitted> for when media was sent
-#This message was deleted for when original message sent was deleted
+#Media Messages, Deleted Messages, Group Invites
 def IsIgnorableMsg(message):
     if (message == "<Media omitted>\n"):
         return True
     if (message == "This message was deleted\n"):
+        return True
+
+    #NOTE: The below message contains a hidden character \u200e at the start of the message. So message length was increased from 42 to 43
+    if (message[:43] == "‎Open this link to join my WhatsApp Group: "):
+        return True
+    if (message[:44] == "Follow this link to join my WhatsApp group: "):
         return True
     return False
 

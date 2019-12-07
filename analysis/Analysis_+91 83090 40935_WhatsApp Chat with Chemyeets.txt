@@ -1,5 +1,5 @@
 ?: 20
-the: 14
-have: 6
 class: 5
-in: 5
+slot: 4
+Okay: 3
+Do: 2

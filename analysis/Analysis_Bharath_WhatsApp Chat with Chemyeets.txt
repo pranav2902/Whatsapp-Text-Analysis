@@ -1,5 +1,5 @@
 Lol: 4
-have: 4
-we: 3
 exam: 3
-at: 3
+F: 3
+What: 2
+test: 2

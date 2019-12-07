@@ -1,5 +1,5 @@
-to: 3
-is: 3
 I'm: 2
-and: 2
-for: 2
+I: 2
+Exactly: 1
+?: 1
+Hey,: 1

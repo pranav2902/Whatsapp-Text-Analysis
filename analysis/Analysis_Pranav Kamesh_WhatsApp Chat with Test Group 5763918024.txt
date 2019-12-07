@@ -1,5 +1,5 @@
 ✌: 7
-the: 6
-we: 4
 I'll: 3
-if: 3
+Yeah: 3
+stuff: 2
+I: 2

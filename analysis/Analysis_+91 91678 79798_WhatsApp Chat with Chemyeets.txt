@@ -1,5 +1,5 @@
-the: 18
-have: 16
-we: 12
-in: 10
 slot: 9
+Do: 7
+A: 7
+open: 5
+anyone: 5

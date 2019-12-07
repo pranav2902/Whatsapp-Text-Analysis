@@ -1,5 +1,5 @@
-for: 2
 D: 1
 slot: 1
 attendance: 1
 percentage: 1
+told: 1

@@ -1,5 +1,5 @@
-the: 19
-is: 10
 No: 10
-we: 10
-have: 10
+please: 10
+proxy: 8
+Do: 7
+slot: 7

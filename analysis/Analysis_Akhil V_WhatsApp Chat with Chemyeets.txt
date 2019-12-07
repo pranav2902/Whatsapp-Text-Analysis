@@ -1,5 +1,5 @@
-the: 20
-is: 15
-have: 11
-to: 11
-for: 9
+Thanks: 7
+Where: 6
+We: 5
+slot: 5
+class: 4

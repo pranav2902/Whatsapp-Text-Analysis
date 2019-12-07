@@ -1,5 +1,5 @@
 target: 1
 audience: 1
 tapti: 1
-only: 1
 Class: 1
+starts: 1

@@ -1,5 +1,3 @@
 Yeah...: 1
 That's: 1
-what: 1
-they: 1
 said: 1

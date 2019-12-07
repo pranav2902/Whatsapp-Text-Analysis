@@ -1,5 +1,5 @@
-the: 38
-in: 26
-for: 24
-to: 22
-and: 19
+slot: 9
+thermal: 8
+boundary: 8
+students: 8
+Y-E-S: 8

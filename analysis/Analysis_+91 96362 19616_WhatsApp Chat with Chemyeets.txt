@@ -1,5 +1,5 @@
-the: 15
-to: 10
-have: 8
-for: 7
-a: 6
+I: 5
++1: 4
+slot: 4
+C: 4
+Do: 4

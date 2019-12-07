@@ -1,5 +1,5 @@
-the: 16
 class: 7
-be: 5
-have: 5
-in: 4
+lab: 4
+We: 3
+sir: 3
+people: 3

@@ -1,5 +1,4 @@
 Elec: 1
 class: 1
-is: 1
-in: 1
 rjn: 1
+202: 1

@@ -1,5 +1,5 @@
-the: 157
-to: 88
-of: 74
-and: 72
-for: 66
+-: 24
+I: 20
+lab: 20
+Department: 18
+The: 18

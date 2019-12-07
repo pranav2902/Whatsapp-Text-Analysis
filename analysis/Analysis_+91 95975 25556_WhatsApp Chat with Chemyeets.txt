@@ -1,5 +1,5 @@
-the: 27
-of: 16
-and: 14
-to: 12
-is: 11
+-: 7
+placement: 6
+team: 6
+year: 4
+I: 3
