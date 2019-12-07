@@ -1,10 +1,14 @@
 import os
 from collections import Counter
+import nltk
+from nltk.corpus import stopwords
 #-------------------------------
 #Directories
 #-------------------------------
-parentDir = 'input'
+inputDir = 'input'
 fileDir = 'temp'
+analysisDir = 'analysis'
+stopDir = 'WithoutStopWords'
 #-------------------------------
 #Script parameters
 #-------------------------------
@@ -15,10 +19,14 @@ shouldValidateLineDates = True
 #-------------------------------
 #Pre-processing
 #-------------------------------
-if not(os.path.exists(parentDir)):
-    os.makedirs(parentDir)
+if not(os.path.exists(inputDir)):
+    os.makedirs(inputDir)
 if not(os.path.exists(fileDir)):
     os.makedirs(fileDir)
+if not(os.path.exists(analysisDir)):
+    os.makedirs(analysisDir)
+if not(os.path.exists(stopDir)):
+    os.makedirs(stopDir)
 
 #===============================
 #Utility functions
@@ -29,6 +37,8 @@ if not(os.path.exists(fileDir)):
 def ValidateLineDate(linestr):
     #The first 20 characters of the message correspond to the timestamp
     linestr = linestr[0:20]
+    if len(linestr) < 20:
+        return False
     flag = True
     if (linestr[2] != '/' or linestr[5] != '/'):
         flag = False
@@ -52,25 +62,59 @@ def ValidateLineName(linestr):
     linestr = linestr[20:]
     name_length = 0
     flag = False
+    #Searches for a semicolon to indicate where the message starts
     while(name_length < len(linestr)):
         if (linestr[name_length] == ':'):
             flag = True
             break
         name_length+=1
     if (flag == False):
-        return(False, 'null')
+        return(False, 'null', 'null')
     if (flag == True):
-        #Returns both the name of the sender and whether it is a valid message
-        return(True, linestr[:name_length])
+        #Returns whether name was detected, the name and the rest of the string
+        return(True, linestr[:name_length], linestr[name_length+2:])
+
+#Function should print the top 5 word count
+def AnalyseMsgsFromFile(filename):
+    print('Analysing file {}'.format(filename))
+    fout = open(analysisDir+'/Analysis_{}'.format(filename),mode='w', encoding='utf8')
+    # text file will be opened
+    with open(stopDir+'/filtered_'+filename, 'r', encoding='utf8') as g:
+        coun = Counter(g.read().split())
+        for word,count in coun.most_common(5):
+            fout.write('%s: %d\n' % (word, count))
+    print('Analysis complete. Output stored in {}'.format(analysisDir+'/Analysis_{}'.format(filename)))
+
+#Function should check whether the message sent was just a media message
+def IsIgnorableMsg(message):
+    if (message == "<Media omitted>\n"):
+        return True
+    return False
+
+def removestopwords(filename):
+    stop_Words = set(stopwords.words('english'))
+    g = open(fileDir+'/{}'.format(filename),mode='r',encoding='utf8')
+    line = g.read()
+    word = line.split()
+    for w in word:
+        if not w in stop_Words:
+            appendfile = open(stopDir+'/filtered_{}'.format(filename),mode = 'a',encoding = "utf8")
+            appendfile.write(" "+w)
+    appendfile.close()
 
 #===============================
 #Main control loop
 #===============================
-for fname in os.listdir(parentDir):
+for fname in os.listdir(inputDir):
     if fname.endswith('.txt'):
         #text file will be opened
-        f = open(parentDir+'/{}'.format(fname), mode='r', encoding='utf8')
+        f = open(inputDir+'/{}'.format(fname), mode='r', encoding='utf8')
+
+        #fout is a dictionary of all file pointers mapped to the name of the messager
+        fout = {}
+        
         print('Processing {}'.format(fname))
+
         #Total lines parsed
         totalMsg = 0
         #Of which how many had passed the timestamp validation
@@ -81,24 +125,27 @@ for fname in os.listdir(parentDir):
         while(line):
             totalMsg+=1
             isDateValid = ValidateLineDate(line)
-            (isNameValid, name) = ValidateLineName(line)
+            (isNameValid, name, message) = ValidateLineName(line)
+            #First checks if the message starts with a timestamp
             if (isDateValid):
                 validDates += 1
+                #Then checks if it has a valid name of sender
                 if (isNameValid):
                     validMsg += 1
+                    #In that case, write the message into the corresponding text file of that sender
+                    #If such a text file doesn't exist, create one
+                    if name not in fout:
+                        fout[name] = open(fileDir+'/{}_{}'.format(name, fname), mode='w', encoding='utf8')
+                    if (not(IsIgnorableMsg(message))):
+                        fout[name].write(message)
             line = f.readline()
         print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
+        f.close()
+        for name in fout:
+            fout[name].close()
+        
+        #Analyses each file created as part of the processing
 
-
-def analysemsg(filename):
-    for fname in os.listdir(fileDir):
-        if filename == fname:
-            # text file will be opened
-            with open(filename) as g:
-                coun = Counter(g.read().split())
-                for word,count in coun.most_common(5):
-                    print('%s: %d' % (word, count))
-
-
-
-
+        for name in fout:
+            removestopwords(name+'_'+fname)
+            AnalyseMsgsFromFile(name+'_'+fname)
