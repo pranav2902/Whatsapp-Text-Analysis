@@ -1,0 +1,5 @@
+spam: 2
+WhatsApp: 2
+Ok: 2
+I'll: 2
+use: 2
