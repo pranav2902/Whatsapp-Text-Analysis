@@ -2,6 +2,7 @@ import os
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import TweetTokenizer
 import string
 
 # -------------------------------
@@ -109,20 +110,23 @@ def IsIgnorableMsg(message):
 # Function should remove all stopwords that are present in the list of stopwords
 def RemoveStopWords(filename):
     stop_Words = set(stopwords.words('english'))
+    tknr = TweetTokenizer()
     g = open(fileDir + '/{}'.format(filename), mode='r', encoding='utf8')
     line = g.readline()
     appendfile = open(stopDir + '/Filtered_{}'.format(filename), mode='w', encoding="utf8")
     while line:
         word = line.split()
         for w in word:
-            if not w in stop_Words:
-                for i in w:
+            w = tknr.tokenize(w)
+            for i in w:
+                if not i in stop_Words:
                     flag = True
-                    if i not in string.printable:
-                        flag = False
-                        break
-                if flag == True:
-                    appendfile.write(" " + w)
+                    for j in i:
+                        if j not in string.printable or j in string.punctuation:
+                            flag = False
+                            break
+                    if flag == True:
+                        appendfile.write(" " + i)
         appendfile.write('\n')
         line = g.readline()
     appendfile.close()
