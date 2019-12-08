@@ -1,5 +1,0 @@
-Somebody: 1
-delta: 1
-vmix: 1
-1: 1
-left: 1

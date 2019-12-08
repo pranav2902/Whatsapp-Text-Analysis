@@ -23,3 +23,5 @@ Since you're the one with the *professional experience* I thought you could set 
 We're gonna have to comb through image files as well👌🏼
 So send some dummy attachments 👌🏼
 No but whether it will be output in the log that “at xx/xx/xxxx xx:xx:xx yyy sent zzz media file”? That's important for the parsing 👌🏼
+Hi
+Bye

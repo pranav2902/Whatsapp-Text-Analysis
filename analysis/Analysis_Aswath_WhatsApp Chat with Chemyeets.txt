@@ -1,5 +1,0 @@
-A: 1
-slot: 1
-class: 1
-1pm: 1
-tmro: 1

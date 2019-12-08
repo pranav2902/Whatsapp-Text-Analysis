@@ -1,5 +1,0 @@
-Happy: 3
-derive: 2
-notes: 2
-zaitoon: 2
-birthday!!!: 1

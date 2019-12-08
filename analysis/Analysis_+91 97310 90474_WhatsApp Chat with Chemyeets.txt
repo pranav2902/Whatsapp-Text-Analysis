@@ -1,5 +1,5 @@
-slot: 6
-No: 6
-What: 5
-Thanks: 4
-Where: 4
+wtf: 36
+u: 35
+gg: 34
+xd: 24
+lul: 24

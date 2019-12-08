@@ -1,5 +1,5 @@
-Yes: 3
-Wheres: 1
-exam: 1
-tomorrow: 1
-?: 1
+happy: 9
+birthday: 8
+yes: 4
+thanks: 2
+1: 2

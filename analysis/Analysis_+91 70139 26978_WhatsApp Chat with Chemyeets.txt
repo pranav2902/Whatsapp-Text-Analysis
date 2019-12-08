@@ -1,5 +1,5 @@
-slot: 9
-thermal: 8
-boundary: 8
-students: 8
-Y-E-S: 8
+guys: 28
+u: 26
+happy: 16
+yeah: 15
+slot: 15

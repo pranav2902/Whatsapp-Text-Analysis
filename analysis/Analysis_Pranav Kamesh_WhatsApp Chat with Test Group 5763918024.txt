@@ -1,5 +1,5 @@
-✌: 12
-I'll: 4
-..: 4
-I: 3
-Yeah: 3
+i'll: 4
+sure: 3
+yeah: 3
+stuff: 2
+cool: 2

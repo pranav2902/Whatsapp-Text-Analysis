@@ -1,3 +1,5 @@
-Msb: 1
-235: 1
-✋🏻: 1
+happy: 14
+hbd: 11
+birthday: 7
+bday: 6
+1: 5

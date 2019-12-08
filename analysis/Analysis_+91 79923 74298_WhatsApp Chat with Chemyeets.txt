@@ -1,5 +1,5 @@
-semester: 5
-How: 4
-Happy: 3
-birthday: 3
-🎉: 3
+happy: 18
+birthday: 17
+u: 13
+get: 11
+class: 9

@@ -1,5 +1,5 @@
-!: 9
-Happy: 3
-told: 3
-test: 3
-birthday: 2
+u: 53
+happy: 30
+birthday: 27
+facts: 21
+pls: 15

@@ -1,5 +1,5 @@
--: 24
-I: 20
-lab: 20
-Department: 18
-The: 18
+class: 51
+one: 36
+slot: 34
+1: 33
+tomorrow: 30

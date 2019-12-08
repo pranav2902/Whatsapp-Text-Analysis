@@ -1,2 +1,5 @@
-No: 1
-Wrong: 1
+quiz: 5
+1: 5
+oct: 4
+math: 4
+phy: 4

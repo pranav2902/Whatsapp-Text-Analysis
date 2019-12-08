@@ -1,5 +1,5 @@
-monday: 2
-ig: 1
-meant: 1
-chill: 1
-He: 1
+thanks: 7
+class: 5
+guys: 5
+day: 4
+memory: 4

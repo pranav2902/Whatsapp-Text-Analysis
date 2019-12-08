@@ -6,14 +6,14 @@
 04/12/2019, 16:58 - Mahesh Jayasankar: Perfect time to start researching how to spam on WhatsApp lmao
 04/12/2019, 16:58 - Pranav Kamesh: Yes I'll see online if I can find anything regarding secondary WhatsApp bot stuff
 04/12/2019, 16:58 - Mahesh Jayasankar: Ok sounds good, I'll hit it up as well
-04/12/2019, 16:58 - Pranav Kamesh: ✌
+04/12/2019, 16:59 - Pranav Kamesh: ✌
 04/12/2019, 16:59 - Mahesh Jayasankar: Also as a secondary utility we could rank the most used emojis; this is my favourite one 👌🏽👌🏽👌🏽
 04/12/2019, 16:59 - Mahesh Jayasankar: I'll end all my sentences with that 👌🏽
 04/12/2019, 17:00 - Mahesh Jayasankar: So make sure to use 👍🏽 emojis 😏😏 frequently 👌🏽
 04/12/2019, 17:00 - Mahesh Jayasankar: Maybe insert a few as noise in your text 👌🏽
 04/12/2019, 17:41 - Pranav Kamesh: Sure...I'll do some of these✌
 04/12/2019, 17:41 - Pranav Kamesh: Cool ✌
-04/12/2019, 18:34 - Mahesh Jayasankar: Hey can you remove the emoji from group title and add some unique number sequence instead?
+04/12/2019, 18:35 - Mahesh Jayasankar: Hey can you remove the emoji from group title and add some unique number sequence instead?
 04/12/2019, 18:35 - Mahesh Jayasankar: 👌🏽
 04/12/2019, 18:37 - Pranav Kamesh changed the subject from "Test Group✌" to "Test Group 5763918024"
 04/12/2019, 18:37 - Pranav Kamesh: Done
@@ -22,10 +22,10 @@
 04/12/2019, 18:37 - Mahesh Jayasankar: No I just realised if we are to use scripts, then we may need to have the group title as something typable👌🏽
 04/12/2019, 18:38 - Mahesh Jayasankar: And the number sequence just because 👌🏽
 04/12/2019, 18:39 - Pranav Kamesh: Yeah cool ✌
-04/12/2019, 18:39 - Pranav Kamesh: I'll be working on the code tomorrow hopefully
+04/12/2019, 18:40 - Pranav Kamesh: I'll be working on the code tomorrow hopefully
 04/12/2019, 18:40 - Pranav Kamesh: Outside now ✌
 04/12/2019, 18:40 - Mahesh Jayasankar: Ok cool 👌🏽
-04/12/2019, 18:49 - Mahesh Jayasankar: ... On second thoughts it's against WhatsApp TOS to automate message-sending. I don't wanna get banned and neither do you 😅. We'll stick to brute messaging👌🏽
+04/12/2019, 18:50 - Mahesh Jayasankar: ... On second thoughts it's against WhatsApp TOS to automate message-sending. I don't wanna get banned and neither do you 😅. We'll stick to brute messaging👌🏽
 04/12/2019, 18:52 - Mahesh Jayasankar: Also, one more thing you should test: 👌🏽
 04/12/2019, 18:53 - Mahesh Jayasankar: Kick me from group, send a series of messages and then add me again👌🏽
 04/12/2019, 18:53 - Mahesh Jayasankar: I want to see if my chat log picks all that up 👌🏽
@@ -42,10 +42,16 @@
 04/12/2019, 21:01 - Mahesh Jayasankar: Since you're the one with the *professional experience* I thought you could set it up 😕
 04/12/2019, 21:01 - Mahesh Jayasankar: 👌🏼
 04/12/2019, 21:19 - Pranav Kamesh: Ah .sure
-04/12/2019, 21:19 - Pranav Kamesh: I'll set one up
+04/12/2019, 21:20 - Pranav Kamesh: I'll set one up
 04/12/2019, 21:21 - Mahesh Jayasankar: <Media omitted>
 04/12/2019, 21:21 - Mahesh Jayasankar: We're gonna have to comb through image files as well👌🏼
 04/12/2019, 21:21 - Mahesh Jayasankar: So send some dummy attachments 👌🏼
 04/12/2019, 21:29 - Pranav Kamesh: No dude..if we export chat without media..No image files will be sent
 04/12/2019, 21:29 - Pranav Kamesh: So no issues✌
 04/12/2019, 21:40 - Mahesh Jayasankar: No but whether it will be output in the log that “at xx/xx/xxxx xx:xx:xx yyy sent zzz media file”? That's important for the parsing 👌🏼
+08/12/2019, 13:42 - You changed the group description
+08/12/2019, 13:51 - You're now an admin
+08/12/2019, 13:52 - You added Mey Siva
+08/12/2019, 13:52 - Mahesh Jayasankar: Hi
+08/12/2019, 13:52 - Mahesh Jayasankar: Bye
+08/12/2019, 13:52 - You removed Mey Siva

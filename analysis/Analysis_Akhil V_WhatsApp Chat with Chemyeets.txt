@@ -1,5 +1,0 @@
-Thanks: 7
-Where: 6
-We: 5
-slot: 5
-class: 4

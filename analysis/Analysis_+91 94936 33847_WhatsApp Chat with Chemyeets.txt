@@ -1,5 +1,5 @@
-No: 10
-please: 10
-proxy: 8
-Do: 7
-slot: 7
+class: 26
+i'm: 22
+someone: 21
+lol: 20
+anyone: 20

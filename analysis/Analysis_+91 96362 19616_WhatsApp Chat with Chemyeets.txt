@@ -1,5 +1,5 @@
-I: 5
-+1: 4
-slot: 4
-C: 4
-Do: 4
+1: 19
+happy: 16
+birthday: 13
+lol: 12
+f: 10

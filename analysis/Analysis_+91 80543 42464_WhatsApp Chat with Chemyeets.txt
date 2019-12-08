@@ -1,5 +1,5 @@
-target: 1
-audience: 1
-tapti: 1
-Class: 1
-starts: 1
+happy: 10
+u: 8
+birthday: 8
+oh: 5
+tomorrow: 4

@@ -1,5 +1,5 @@
-Happy: 4
-birthday: 1
-Priyansh: 1
-🎉🎂: 1
-birthday🎂🎉: 1
+happy: 32
+birthday: 27
+thanks: 8
+u: 4
+everyone: 3

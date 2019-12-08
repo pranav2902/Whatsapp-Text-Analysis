@@ -1,5 +1,5 @@
-slot: 9
-Do: 7
-A: 7
-open: 5
-anyone: 5
+happy: 29
+birthday: 26
+thanks: 21
+u: 21
+tom: 17

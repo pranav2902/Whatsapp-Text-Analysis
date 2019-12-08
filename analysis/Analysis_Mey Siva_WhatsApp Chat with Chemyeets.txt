@@ -1,5 +1,5 @@
-I: 3
-da: 2
-🖕🏼: 1
-Hi: 1
-Guys...: 1
+happy: 13
+birthday: 13
+alumni: 3
+daa: 2
+guys: 2

@@ -1,5 +1,0 @@
-u: 6
-guys: 5
-Thank: 4
-class: 3
-r: 3

@@ -16,8 +16,11 @@ stopDir = 'without_stop_words'
 # Script parameters
 # -------------------------------
 
-# Whether to check if every line in the script is an authentic message based on the time in log
-shouldValidateLineDates = True
+# -------------------------------
+# Predefined constants
+# -------------------------------
+
+ALPHANUM = string.ascii_letters + string.digits
 
 # -------------------------------
 # Pre-processing
@@ -75,6 +78,14 @@ def ValidateLineName(linestr):
     if (flag == False):
         return (False, 'null', 'null')
     if (flag == True):
+        # this means that a name was found. Now we have to check whether it is a false name due to misinterpretation
+        name = linestr[:name_length]
+        # misinterpretation in group creation
+        if (' created group "' in name):
+            return (False, 'null', 'null')
+        # misinterpretation in group subject change
+        if (' changed the subject from "' in name):
+            return (False, 'null', 'null')
         # Returns whether name was detected, the name and the rest of the string
         return (True, linestr[:name_length], linestr[name_length + 2:])
 
@@ -106,18 +117,6 @@ def IsIgnorableMsg(message):
         return True
     return False
 
-#Function should remove all stopwords that are present in the list of stopwords
-# def RemoveStopWords(filename):
-#     stop_Words = set(stopwords.words('english'))
-#     g = open(fileDir+'/{}'.format(filename),mode='r',encoding='utf8')
-#     line = g.readline()
-#     appendfile = open(stopDir+'/Filtered_{}'.format(filename),mode = 'w',encoding = "utf8")
-#     while line:
-#         word = line.split()
-#         for w in word:
-#             if not w in stop_Words:
-#                 appendfile.write(" "+w)
-
 # Function should remove all stopwords that are present in the list of stopwords
 def RemoveStopWords(filename):
     stop_Words = set(stopwords.words('english'))
@@ -128,8 +127,16 @@ def RemoveStopWords(filename):
     while line:
         wordlist = tknr.tokenize(line)
         for word in wordlist:
+            word = word.lower()
             if not word in stop_Words:
-                appendfile.write(" " + word)
+                flag = False
+                for letter in word:
+                    # The word is counted as a valid word if and only if it has at least one alphanum in it
+                    if letter in (ALPHANUM):
+                        flag = True
+                        break
+                if flag == True:
+                    appendfile.write(" " + word)
         appendfile.write('\n')
         line = g.readline()
     appendfile.close()

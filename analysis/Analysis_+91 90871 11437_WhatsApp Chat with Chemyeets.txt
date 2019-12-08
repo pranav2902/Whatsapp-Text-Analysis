@@ -1,4 +1,5 @@
-Happy: 2
-birthday🍰: 1
-birthday: 1
-🍰: 1
+birthday: 16
+happy: 15
+saw: 1
+bbc: 1
+thought: 1

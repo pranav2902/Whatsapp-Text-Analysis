@@ -1,3 +1,0 @@
-Does: 1
-anyone: 1
-calculator?: 1

@@ -1,3 +1,0 @@
-Resonant: 1
-frequency: 1
-(Hz): 1

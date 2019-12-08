@@ -1,4 +1,0 @@
-What: 1
-exact: 1
-timings: 1
-midsem?: 1

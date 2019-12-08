@@ -1,0 +1,5 @@
+e: 5
+q: 2
+rwdqdgbwtqeqrqebgf: 2
+tm: 2
+ng: 2

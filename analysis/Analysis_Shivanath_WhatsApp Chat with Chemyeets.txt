@@ -1,0 +1,5 @@
+happy: 10
+birthday: 9
+da: 2
+ch17b020: 1
+chem: 1

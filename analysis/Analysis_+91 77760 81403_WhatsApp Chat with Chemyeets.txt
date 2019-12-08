@@ -1,5 +1,5 @@
-Happy: 1
-bday: 1
-govinda: 1
-😂: 1
-No: 1
+happy: 17
+bday: 14
+1: 8
+u: 6
+h: 5

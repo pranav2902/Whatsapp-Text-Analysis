@@ -1,0 +1,5 @@
+2018: 5
+thank: 3
+pictures: 3
+picture: 3
+nov: 3

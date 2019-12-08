@@ -1,5 +1,5 @@
-Happy: 2
-birthday!: 2
-:): 1
-He: 1
-last: 1
+happy: 24
+birthday: 23
+okay: 10
+thanks: 7
+1: 7

@@ -1,5 +1,5 @@
-?: 20
-class: 5
-slot: 4
-Okay: 3
-Do: 2
+happy: 11
+birthday: 11
+class: 7
+slot: 6
+tutorial: 4

@@ -1,5 +1,5 @@
+class: 6
 cre: 6
-class: 5
-Do: 3
-Today: 3
+today: 3
 renewable: 2
+anyone: 2

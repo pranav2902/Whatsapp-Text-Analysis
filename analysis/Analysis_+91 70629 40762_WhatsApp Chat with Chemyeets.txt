@@ -1,5 +1,5 @@
-Happy: 3
-Institute: 3
-Internship: 3
-click: 3
-birthday!: 2
+happy: 6
+birthday: 6
+internship: 5
+register: 5
+click: 5

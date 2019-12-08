@@ -1,3 +1,92 @@
+But what about the life skills class
+You can't move that
+If there were more than one class per week, bunking one would be fine
+Guys sitting in 201 are Batch 4
+202 guys are Batch 5
+Just remember it like that
+🔥🔥
+There won't be Phy lecture on that day
+So mini test won't be possible on quiz day
+Slots get switched
+Thermo guy can't afford to lose his slot on that day
+The same thing's happening in one of my friend's college
+This shit is getting famous now
+I guess it's not my friend's college
+Didn't we already have a discussion on that in class?
+That day when Gautam asked of he should ask the profs
+*if
+Firstly you need to learn how to type
+Then discuss about holidays
+😂
+I don't think we do
+Nope
+Pls use those words wisely
+Gives a wrong meaning
+Look at the calender
+It's given there
+23rd to 3rd
+First video up there
+GN, my friend
+*moodul
+Link bhej jaldi
+.
+Cancel Bc
+Laude tere class me hu
+Kabhi dekha nai kya mujhe
+Peace
+This was properly explained in the orientation
+sivaassignment@gmail.com
+9
+It's a session directly after the orientation
+Read the instructions below the time table
+I couldn't yesterday
+Except starboy, none of the others were working too
+Thanks a lot guys
+Thanks guys
+Thanks everyone
+Thanks guys
+Thanks a lot everyone
+Thanks bros
+Thanks all
+Awesome!
+Yes pls
+Next Wed
+We Team Anveshak from CFI,IIT Madras are proud to present to you our best *Mars Rover to date Aurora 2.0* (https://youtu.be/uipfBgziFBc )Zero degree steering mechanism, Bar differential system, a complete 5DOF Robotic Arm, Dynamically switching Custom dual CPU architecture, Monte Carlo localization algorithms, Point cloud map creation using LIDARS, LGQC Control Systems and more have been developed and tested through the relentless effort of all our Team Members. *Last year, on our very first try, we were among the 30 teams selected Worldwide to participate in the grand finals in Utah*.This year we are aiming to be in the *Top 10.*
+
+
+
+To know more :
+
+http://anveshak.team/?i=1
+Happy birthday!
+Yeah
+There's no error because your extra inputs are stored in the next memory locations
+C doesn't check array bounds
+The call a[I] is just a pointer
+It's not supposed to
+If it contains some program memory, then your program will show errors
+Else it will run like normal
+Basically the extra assignment will overwrite whatever was there in those locations
+Declaration reserves a set of continuous memory locations for the array
+The locations after that can be used the computer to store program memory
+If you overwrite those addresses, you are corrupting the program
+That's why you need bounds
+The compiler expects you to stick to your bounds
+If you don't it's your fault
+Class
+Same as quizzes bro
+Happy birthday Anna!
+Wait for second round
+Gg
+Hello bounak
+Go commit uninstall life
+may the moths attack all your lamps
+F
+Nope
+It's just a quiz bro
+Time is 10pm
+Macha, jaake acadly dekhle na
+.
 ig he meant monday
 chill
 He said tomorrow or tuesday

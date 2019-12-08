@@ -1,5 +1,5 @@
-Happy: 4
-birthday: 3
-🥳: 1
-holi🥳: 1
-Yes: 1
+happy: 26
+birthday: 22
+thank: 4
+tnq: 4
+year: 3

@@ -1,0 +1,5 @@
+team: 4
+u: 2
+know: 2
+want: 2
+vendors: 2

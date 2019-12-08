@@ -1,5 +1,0 @@
-Lol: 4
-exam: 3
-F: 3
-What: 2
-test: 2

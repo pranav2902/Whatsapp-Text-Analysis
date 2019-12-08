@@ -1,5 +1,0 @@
-Happy: 2
-birthday: 2
-Priyansh!: 1
-No: 1
-Praveen: 1
