@@ -1,5 +1,0 @@
-happy: 10
-u: 8
-birthday: 8
-oh: 5
-today: 5

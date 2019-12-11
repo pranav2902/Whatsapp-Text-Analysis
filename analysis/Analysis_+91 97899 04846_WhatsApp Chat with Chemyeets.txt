@@ -1,5 +1,0 @@
-ches: 14
-please: 12
-night: 12
-team: 10
-interested: 7

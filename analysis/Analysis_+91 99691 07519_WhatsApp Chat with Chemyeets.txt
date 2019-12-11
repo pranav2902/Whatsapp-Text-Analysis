@@ -1,5 +1,0 @@
-u: 3
-fixing: 3
-seniors: 2
-got: 2
-shreyas: 1

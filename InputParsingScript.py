@@ -8,10 +8,20 @@ import string
 # -------------------------------
 # Directories
 # -------------------------------
+
+# NOTE: All folder paths and folder names end WITHOUT a /
+# external directories
 inputDir = 'input'
-fileDir = 'temp'
-analysisDir = 'analysis'
-stopDir = 'without_stop_words'
+outputDir = 'output'
+
+# internal folder names: multiple folders with these names will be created
+# Split message: contains step 1 of output
+splitMsgFolderName = 'split_msg'
+# Without stop words folder: contains step 2 of output
+withoutStopWordsFolderName = 'without_stop_words'
+# Analysis folder: contains final output
+analysisFolderName = 'analysis'
+
 # -------------------------------
 # Script parameters
 # -------------------------------
@@ -25,19 +35,54 @@ ALPHANUM = string.ascii_letters + string.digits
 # -------------------------------
 # Pre-processing
 # -------------------------------
+
 if not (os.path.exists(inputDir)):
     os.makedirs(inputDir)
-if not (os.path.exists(fileDir)):
-    os.makedirs(fileDir)
-if not (os.path.exists(analysisDir)):
-    os.makedirs(analysisDir)
-if not (os.path.exists(stopDir)):
-    os.makedirs(stopDir)
-
+if not (os.path.exists(outputDir)):
+    os.makedirs(outputDir)
 
 # ===============================
 # Utility functions
 # ===============================
+
+# Check if a directory exists, if not, create it
+def ValidatePath(path):
+    if not (os.path.exists(path)):
+        os.makedirs(path)
+        return False
+    # True implies path exists
+    return True
+
+# Function used to check if input and output file paths are feasible.
+# If this function returns false, it means something is wrong with the IO specifications
+# To use: insert below code snippet
+# if not ValidateIO(inputFilePath, outputFilePath):
+#       return
+def ValidateIO(inputFilePath, outputFilePath):
+    # Verifying existence of input file path
+    (inputFileHead, inputFileName) = os.path.split(inputFilePath)
+    if inputFileHead:
+        if not ValidatePath(inputFileHead):
+            print('Path {} is empty. Analysis aborted'.format(inputFileHead))
+            return False
+        if inputFilePath == outputFilePath:
+            print('Output and input paths are identical. Analysis aborted')
+            return False
+
+    # Verifying existence of output folder containing the output file
+    ValidatePath(os.path.split(outputFilePath)[0])
+    return True
+
+# Variation of ValidateIO used if output folder instead of output file is specified
+def ValidateIOf(inputFilePath, outputFolderPath):
+    (inputFileHead, inputFileName) = os.path.split(inputFilePath)
+    if inputFileHead:
+        if not ValidatePath(inputFileHead):
+            print('Path {} is empty. Analysis aborted'.format(inputFileHead))
+            return False
+    # Verifying existence of output folder containing the output file
+    ValidatePath(outputFolderPath)
+    return True
 
 # Check if the message starts with a date in the proper format
 def ValidateLineDate(linestr):
@@ -62,8 +107,7 @@ def ValidateLineDate(linestr):
                 flag = False
     return flag
 
-
-# Check whehter the message was sent by someone. Meaning it is of the format "person_name: Message".
+# Check whether the message was sent by someone. Meaning it is of the format "person_name: Message".
 def ValidateLineName(linestr):
     # The first 20 characters of the message correspond to the timestamp
     linestr = linestr[20:]
@@ -89,18 +133,21 @@ def ValidateLineName(linestr):
         # Returns whether name was detected, the name and the rest of the string
         return (True, linestr[:name_length], linestr[name_length + 2:])
 
-
 # Function should print the top 5 word count
-def AnalyseMsgsFromFile(filename):
-    print('Analysing file {}'.format(filename))
-    fout = open(analysisDir + '/Analysis_{}'.format(filename), mode='w', encoding='utf8')
-    # text file will be opened
-    with open(stopDir + '/Filtered_' + filename, 'r', encoding='utf8') as g:
-        coun = Counter(g.read().split())
+def FindWordCountFromFile(inputFilePath, outputFilePath):
+    print('Analysing file: {}'.format(inputFilePath))
+
+    if not ValidateIO(inputFilePath, outputFilePath):
+        return
+
+    # Input from fin, output in fout
+    fout = open(outputFilePath, mode='w', encoding='utf8')
+    with open(inputFilePath, 'r', encoding='utf8') as fin:
+        coun = Counter(fin.read().split())
         for word, count in coun.most_common(5):
             fout.write('%s: %d\n' % (word, count))
-    print('Analysis complete. Output stored in {}'.format(analysisDir + '/Analysis_{}'.format(filename)))
-
+    fout.close()
+    print('Analysis complete. Output stored in {}'.format(outputFilePath))
 
 # Function should check whether the message sent was one of the few system generated messages:
 # Media Messages, Deleted Messages, Group Invites
@@ -118,12 +165,19 @@ def IsIgnorableMsg(message):
     return False
 
 # Function should remove all stopwords that are present in the list of stopwords
-def RemoveStopWords(filename):
+def RemoveStopWords(inputFilePath, outputFilePath):
+    # Stop Words: commonly used words like for, is, and that need to be filtered out
     stop_Words = set(stopwords.words('english'))
+    # TweetTokenizer tokenizes string but preserves ' and - in words
     tknr = TweetTokenizer()
-    g = open(fileDir + '/{}'.format(filename), mode='r', encoding='utf8')
-    line = g.readline()
-    appendfile = open(stopDir + '/Filtered_{}'.format(filename), mode='w', encoding="utf8")
+
+    if not ValidateIO(inputFilePath, outputFilePath):
+        return
+
+    fin = open(inputFilePath, mode='r', encoding='utf8')
+    fout = open(outputFilePath, mode='w', encoding="utf8")
+
+    line = fin.readline()
     while line:
         wordlist = tknr.tokenize(line)
         for word in wordlist:
@@ -140,70 +194,102 @@ def RemoveStopWords(filename):
                         flag = True
                         break
                 if flag == True:
-                    appendfile.write(" " + word)
-        appendfile.write('\n')
-        line = g.readline()
-    appendfile.close()
+                    fout.write(" " + word)
+        fout.write('\n')
+        line = fin.readline()
+    
+    fin.close()
+    fout.close()
+
+# Reads a group, and creates a text file for each person who sent messages in the group
+def SplitMessageFilesBySender(inputFilePath, outputFolderPath):
+    # fout is a dictionary of all file pointers mapped to the name of the message
+    fout = {}
+
+    if not ValidateIOf(inputFilePath, outputFolderPath):
+        return
+    
+    # text file will be opened
+    f = open(inputFilePath, mode='r', encoding='utf8')
+    print('Processing: {}'.format(inputFilePath))
+
+    # Total lines parsed
+    totalMsg = 0
+    # Of which how many had passed the timestamp validation
+    validDates = 0
+    # Of which how many had been actually sent by a person
+    validMsg = 0
+    line = f.readline()
+    # variable that checks whether the current message is a continuation of a previous message
+    isContinuation = False
+    lastMsgSenderName = 'null'
+    while (line):
+        totalMsg += 1
+        isDateValid = ValidateLineDate(line)
+        (isNameValid, name, message) = ValidateLineName(line)
+        # First checks if the message starts with a timestamp
+        if (isDateValid):
+            validDates += 1
+            # Then checks if it has a valid name of sender
+            if (isNameValid):
+                validMsg += 1
+                isContinuation = True
+                lastMsgSenderName = name
+
+                # In that case, write the message into the corresponding text file of that sender
+                # If such a text file doesn't exist, create one
+                if name not in fout:
+                    fout[name] = open('{}/{}.txt'.format(outputFolderPath, name), mode='w', encoding='utf8')
+                if (not (IsIgnorableMsg(message))):
+                    fout[name].write(message)
+            # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
+            else:
+                isContinuation = False
+        # If a valid timestamp doesn't exist, it means that the message is a continuation line of previously sent message
+        else:
+            if isContinuation:
+                fout[lastMsgSenderName].write(line)
+        line = f.readline()
+    print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
+    f.close()
+    for name in fout:
+        fout[name].close()
+    return fout
 
 
 # ===============================
 # Main control loop
 # ===============================
-for fname in os.listdir(inputDir):
-    if fname.endswith('.txt'):
-        # text file will be opened
-        f = open(inputDir + '/{}'.format(fname), mode='r', encoding='utf8')
 
+
+for inputFileName in os.listdir(inputDir):
+    if inputFileName.endswith('.txt'):
+        
+        # Input file variable names for easy access
+        (inputFileNameWithoutExt, inputFileExt) = os.path.splitext(inputFileName)
+        inputTextFilePath = inputDir + '/{}'.format(inputFileName)
+
+        # Definition of local file directories, these are unique for a particular group chat
+        splitMessageOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, splitMsgFolderName)
+        ValidatePath(splitMessageOutputFolderPath)
+
+        withoutStopWordsOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, withoutStopWordsFolderName)
+        ValidatePath(withoutStopWordsOutputFolderPath)
+
+        analysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
+        ValidatePath(analysisOutputFolderPath)
+
+        # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
-        fout = {}
+        fout = SplitMessageFilesBySender(inputTextFilePath, splitMessageOutputFolderPath)
 
-        print('Processing {}'.format(fname))
+        # Analysis Steps
+        # loops through each individual contact name in the group
+        for contact_name in fout:
+            # Input Folder ---> Output Folder
 
-        # Total lines parsed
-        totalMsg = 0
-        # Of which how many had passed the timestamp validation
-        validDates = 0
-        # Of which how many had been actually sent by a person
-        validMsg = 0
-        line = f.readline()
-        # variable that checks whether the current message is a continuation of a previous message
-        isContinuation = False
-        lastMsgSenderName = 'null'
-        while (line):
-            totalMsg += 1
-            isDateValid = ValidateLineDate(line)
-            (isNameValid, name, message) = ValidateLineName(line)
-            # First checks if the message starts with a timestamp
-            if (isDateValid):
-                validDates += 1
-                # Then checks if it has a valid name of sender
-                if (isNameValid):
-                    validMsg += 1
-                    isContinuation = True
-                    lastMsgSenderName = name
+            # Split Messages ---> Without Stop Words
+            RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name), '{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
 
-                    # In that case, write the message into the corresponding text file of that sender
-                    # If such a text file doesn't exist, create one
-                    if name not in fout:
-                        fout[name] = open(fileDir + '/{}_{}'.format(name, fname), mode='w', encoding='utf8')
-                    if (not (IsIgnorableMsg(message))):
-                        fout[name].write(message)
-                # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
-                else:
-                    isContinuation = False
-            # If a valid timestamp doesn't exist, it means that the message is a continuation line of previously sent message
-            else:
-                if isContinuation:
-                    fout[lastMsgSenderName].write(line)
-            line = f.readline()
-        print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(
-            totalMsg, validDates, validMsg))
-        f.close()
-        for name in fout:
-            fout[name].close()
-
-        # Analyses each file created as part of the processing
-
-        for name in fout:
-            RemoveStopWords(name + '_' + fname)
-            AnalyseMsgsFromFile(name + '_' + fname)
+            # Without Stop Words ---> Analysis
+            FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name), '{}/{}.txt'.format(analysisOutputFolderPath, contact_name))

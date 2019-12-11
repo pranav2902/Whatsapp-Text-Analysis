@@ -1,5 +1,0 @@
-happy: 6
-birthday: 6
-internship: 5
-register: 5
-click: 5

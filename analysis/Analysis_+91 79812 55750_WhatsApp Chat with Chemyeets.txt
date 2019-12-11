@@ -1,5 +1,0 @@
-happy: 9
-ra: 6
-birthday: 6
-bday: 3
-alumni: 3

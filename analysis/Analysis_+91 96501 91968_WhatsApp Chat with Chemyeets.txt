@@ -1,5 +1,0 @@
-happy: 38
-birthday: 32
-class: 9
-one: 7
-anyone: 7

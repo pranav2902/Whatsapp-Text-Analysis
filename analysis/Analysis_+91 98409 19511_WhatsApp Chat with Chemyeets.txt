@@ -1,5 +1,0 @@
-u: 53
-happy: 30
-birthday: 27
-facts: 21
-pls: 15

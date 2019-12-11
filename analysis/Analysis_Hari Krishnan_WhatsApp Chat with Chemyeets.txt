@@ -1,5 +1,0 @@
-u: 8
-going: 2
-date: 2
-guys: 2
-message: 2

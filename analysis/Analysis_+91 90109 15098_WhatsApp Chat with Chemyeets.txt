@@ -1,5 +1,0 @@
-happy: 29
-birthday: 25
-thanks: 9
-class: 6
-today: 6

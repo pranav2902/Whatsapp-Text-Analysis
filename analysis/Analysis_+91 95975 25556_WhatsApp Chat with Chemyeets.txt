@@ -1,5 +1,0 @@
-team: 11
-placement: 10
-happy: 7
-birthday: 6
-year: 6

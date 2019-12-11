@@ -1,5 +1,0 @@
-yeah: 5
-anyone: 5
-guys: 4
-syllabus: 4
-one: 4

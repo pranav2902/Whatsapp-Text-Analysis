@@ -1,5 +1,0 @@
-happy: 27
-birthday: 26
-praveen: 2
-unable: 1
-enroll: 1
