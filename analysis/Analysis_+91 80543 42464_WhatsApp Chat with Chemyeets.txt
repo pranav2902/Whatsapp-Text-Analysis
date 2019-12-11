@@ -2,4 +2,4 @@ happy: 10
 u: 8
 birthday: 8
 oh: 5
-tomorrow: 4
+today: 5

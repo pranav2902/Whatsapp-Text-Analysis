@@ -128,6 +128,10 @@ def RemoveStopWords(filename):
         wordlist = tknr.tokenize(line)
         for word in wordlist:
             word = word.lower()
+            # If the word contains an apostrophe, it is a contraction. The first word in the contraction is only considered
+            # Any words following the apostrophe are always stop words. So we can ignore them
+            if ("'" in word):
+                word = nltk.word_tokenize(word)[0]
             if not word in stop_Words:
                 flag = False
                 for letter in word:
