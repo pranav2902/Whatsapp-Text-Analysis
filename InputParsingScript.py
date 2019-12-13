@@ -1,6 +1,7 @@
 import os
 from collections import Counter
 import nltk
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 import string
@@ -38,6 +39,72 @@ if not (os.path.exists(stopDir)):
 # ===============================
 # Utility functions
 # ===============================
+
+class IndivStats:
+
+    def __init__(self,name,AvgWords,TotalMessages,WordCount):
+        self.AvgWords = AvgWords
+        self.TotalMessages = TotalMessages
+        self.WordCount = WordCount
+        self.name = name
+    def Calculations(self,inputFilePath,outputFilePath):
+        fin = open(inputFilePath,mode='r',encoding="utf8")
+        fout = open(outputFilePath,mode = 'w',encoding = "utf8")
+        words = fin.read().split()
+        self.WordCount = len(words)
+        count = 0
+        line = fin.readline()
+        while(line):
+            (x,nam,message) = ValidateLineName(line)
+            if x and self.name == nam:
+                count += 1
+        self.TotalMessages = count
+        self.AvgWords = round(self.WordCount / self.TotalMessages)
+        fout.write("\n The Total number of words sent by {} is {}".format(self.name,self.WordCount))
+        fout.write("\n The Total number of messages sent by {} is {}".format(self.name, self.TotalMessages))
+        fout.write("\n The Average number of words sent by {} per message is {}".format(self.name, self.AvgWords))
+        fin.close()
+        fout.close()
+
+
+# Check if a directory exists, if not, create it
+def ValidatePath(path):
+    if not (os.path.exists(path)):
+        os.makedirs(path)
+        return False
+    # True implies path exists
+    return True
+
+# Function used to check if input and output file paths are feasible.
+# If this function returns false, it means something is wrong with the IO specifications
+# To use: insert below code snippet
+# if not ValidateIO(inputFilePath, outputFilePath):
+#       return
+def ValidateIO(inputFilePath, outputFilePath):
+    # Verifying existence of input file path
+    (inputFileHead, inputFileName) = os.path.split(inputFilePath)
+    if inputFileHead:
+        if not ValidatePath(inputFileHead):
+            print('Path {} is empty. Analysis aborted'.format(inputFileHead))
+            return False
+        if inputFilePath == outputFilePath:
+            print('Output and input paths are identical. Analysis aborted')
+            return False
+
+    # Verifying existence of output folder containing the output file
+    ValidatePath(os.path.split(outputFilePath)[0])
+    return True
+
+# Variation of ValidateIO used if output folder instead of output file is specified
+def ValidateIOf(inputFilePath, outputFolderPath):
+    (inputFileHead, inputFileName) = os.path.split(inputFilePath)
+    if inputFileHead:
+        if not ValidatePath(inputFileHead):
+            print('Path {} is empty. Analysis aborted'.format(inputFileHead))
+            return False
+    # Verifying existence of output folder containing the output file
+    ValidatePath(outputFolderPath)
+    return True
 
 # Check if the message starts with a date in the proper format
 def ValidateLineDate(linestr):
@@ -100,6 +167,8 @@ def AnalyseMsgsFromFile(filename):
         for word, count in coun.most_common(5):
             fout.write('%s: %d\n' % (word, count))
     print('Analysis complete. Output stored in {}'.format(analysisDir + '/Analysis_{}'.format(filename)))
+    fout.close()
+
 
 
 # Function should check whether the message sent was one of the few system generated messages:
