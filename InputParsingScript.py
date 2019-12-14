@@ -1,6 +1,7 @@
 import os
 from collections import Counter
 import nltk
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 import string
@@ -44,6 +45,33 @@ if not (os.path.exists(outputDir)):
 # ===============================
 # Utility functions
 # ===============================
+
+class IndivStats:
+
+    def __init__(self,name,AvgWords,TotalMessages,WordCount):
+        self.AvgWords = AvgWords
+        self.TotalMessages = TotalMessages
+        self.WordCount = WordCount
+        self.name = name
+    def Calculations(self,inputFilePath,outputFilePath):
+        fin = open(inputFilePath,mode='r',encoding="utf8")
+        fout = open(outputFilePath,mode = 'w',encoding = "utf8")
+        words = fin.read().split()
+        self.WordCount = len(words)
+        count = 0
+        line = fin.readline()
+        while(line):
+            (x,nam,message) = ValidateLineName(line)
+            if x and self.name == nam:
+                count += 1
+        self.TotalMessages = count
+        self.AvgWords = round(self.WordCount / self.TotalMessages)
+        fout.write("\n The Total number of words sent by {} is {}".format(self.name,self.WordCount))
+        fout.write("\n The Total number of messages sent by {} is {}".format(self.name, self.TotalMessages))
+        fout.write("\n The Average number of words sent by {} per message is {}".format(self.name, self.AvgWords))
+        fin.close()
+        fout.close()
+
 
 # Check if a directory exists, if not, create it
 def ValidatePath(path):
