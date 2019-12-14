@@ -5,6 +5,8 @@ nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 import string
+import datetime
+import dateutil.parser
 
 # -------------------------------
 # Directories
@@ -18,6 +20,8 @@ outputDir = 'output'
 # internal folder names: multiple folders with these names will be created
 # Split message: contains step 1 of output
 splitMsgFolderName = 'split_msg'
+# Timestamp folder: contains timestamp info
+timestampFolderName = 'timestamps'
 # Without stop words folder: contains step 2 of output
 withoutStopWordsFolderName = 'without_stop_words'
 # Analysis folder: contains final output
@@ -32,6 +36,8 @@ analysisFolderName = 'analysis'
 # -------------------------------
 
 ALPHANUM = string.ascii_letters + string.digits
+NULLDATETIME = datetime.datetime(1019,12,14,22,17)
+TIMESTAMPFORMAT = "%Y-%m-%d %H:%M"
 
 # -------------------------------
 # Pre-processing
@@ -43,7 +49,7 @@ if not (os.path.exists(outputDir)):
     os.makedirs(outputDir)
 
 # ===============================
-# Utility functions
+# Class definitions
 # ===============================
 
 class IndivStats:
@@ -53,6 +59,13 @@ class IndivStats:
         self.TotalMessages = TotalMessages
         self.WordCount = WordCount
         self.name = name
+
+    def IncrementMsgCount(self, amt):
+        self.TotalMessages += amt
+
+    def IncrementWordCount(self, amt):
+        self.WordCount += amt
+
     def Calculations(self,inputFilePath,outputFilePath):
         fin = open(inputFilePath,mode='r',encoding="utf8")
         fout = open(outputFilePath,mode = 'w',encoding = "utf8")
@@ -72,6 +85,9 @@ class IndivStats:
         fin.close()
         fout.close()
 
+# ===============================
+# Utility functions
+# ===============================
 
 # Check if a directory exists, if not, create it
 def ValidatePath(path):
@@ -112,12 +128,13 @@ def ValidateIOf(inputFilePath, outputFolderPath):
     ValidatePath(outputFolderPath)
     return True
 
-# Check if the message starts with a date in the proper format
+# Check if the message starts with a date in the proper format, also returns datetime if a valid one was found
 def ValidateLineDate(linestr):
     # The first 20 characters of the message correspond to the timestamp
     linestr = linestr[0:20]
+    rcrdDateTime = NULLDATETIME
     if len(linestr) < 20:
-        return False
+        return (False, rcrdDateTime)
     flag = True
     if (linestr[2] != '/' or linestr[5] != '/'):
         flag = False
@@ -133,7 +150,11 @@ def ValidateLineDate(linestr):
         if (i not in (2, 5, 10, 11, 14, 17, 18, 19)):
             if (not (linestr[i].isdigit())):
                 flag = False
-    return flag
+    if (flag == True):
+        # parse function reads the timestamp in string form and converts it into a datetime data type
+        rcrdDateTime = dateutil.parser.parse(linestr[0:17], dayfirst = True)
+    # Returns whether timestamp is valid along with timestamp
+    return (flag, rcrdDateTime)
 
 # Check whether the message was sent by someone. Meaning it is of the format "person_name: Message".
 def ValidateLineName(linestr):
@@ -230,14 +251,19 @@ def RemoveStopWords(inputFilePath, outputFilePath):
     fout.close()
 
 # Reads a group, and creates a text file for each person who sent messages in the group
-def SplitMessageFilesBySender(inputFilePath, outputFolderPath):
-    # fout is a dictionary of all file pointers mapped to the name of the message
-    fout = {}
+def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOutputFolderPath):
+    # splitmsgfout is a dictionary of all splitmsg output file pointers mapped to the name of the message
+    splitmsgfout = {}
+    # timestampfout is a dictionary of all timestamp output file pointers mapped to the name of the message
+    timestampfout = {}
+    # contacts is a dictionary of all the class objects of IndivStats for the particular chat
+    contacts = {}
 
-    if not ValidateIOf(inputFilePath, outputFolderPath):
+    if not ValidateIOf(inputFilePath, msgOutputFolderPath):
         return
-    
-    # text file will be opened
+    ValidatePath(timestampOutputFolderPath)
+
+    # input text file will be opened
     f = open(inputFilePath, mode='r', encoding='utf8')
     print('Processing: {}'.format(inputFilePath))
 
@@ -253,7 +279,7 @@ def SplitMessageFilesBySender(inputFilePath, outputFolderPath):
     lastMsgSenderName = 'null'
     while (line):
         totalMsg += 1
-        isDateValid = ValidateLineDate(line)
+        (isDateValid, currentMsgDateTime) = ValidateLineDate(line)
         (isNameValid, name, message) = ValidateLineName(line)
         # First checks if the message starts with a timestamp
         if (isDateValid):
@@ -265,24 +291,37 @@ def SplitMessageFilesBySender(inputFilePath, outputFolderPath):
                 lastMsgSenderName = name
 
                 # In that case, write the message into the corresponding text file of that sender
-                # If such a text file doesn't exist, create one
-                if name not in fout:
-                    fout[name] = open('{}/{}.txt'.format(outputFolderPath, name), mode='w', encoding='utf8')
+                # If such a text file doesn't exist, initialise the name into the dictionaries and create text file
+                if name not in splitmsgfout:
+                    # initialise splitmsg output file
+                    splitmsgfout[name] = open('{}/{}.txt'.format(msgOutputFolderPath, name), mode='w', encoding='utf8')
+                    # initialse timestamp output file
+                    timestampfout[name] = open('{}/{}.txt'.format(timestampOutputFolderPath, name), mode='w', encoding='utf8')
+                    # initialise contact class object
+                    contacts[name] = IndivStats(name, 0, 0, 0)
+                # This is the final check that determines if the message is a valid message, sent by a contact. Deleted messages and invites are ignored here.
                 if (not (IsIgnorableMsg(message))):
-                    fout[name].write(message)
+                    # Message contents are added to splitmsg file
+                    splitmsgfout[name].write(message)
+                    # Timestamp is added to timestamp file
+                    timestampfout[name].write(currentMsgDateTime.strftime(TIMESTAMPFORMAT))
+                    timestampfout[name].write('\n')
+                    # Messages count is incremented in contact file
+                    contacts[name].IncrementMsgCount(1)
             # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
             else:
                 isContinuation = False
         # If a valid timestamp doesn't exist, it means that the message is a continuation line of previously sent message
         else:
             if isContinuation:
-                fout[lastMsgSenderName].write(line)
+                splitmsgfout[lastMsgSenderName].write(line)
         line = f.readline()
     print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
     f.close()
-    for name in fout:
-        fout[name].close()
-    return fout
+    for name in splitmsgfout:
+        splitmsgfout[name].close()
+        timestampfout[name].close()
+    return splitmsgfout
 
 
 # ===============================
@@ -301,6 +340,9 @@ for inputFileName in os.listdir(inputDir):
         splitMessageOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, splitMsgFolderName)
         ValidatePath(splitMessageOutputFolderPath)
 
+        timestampOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, timestampFolderName)
+        ValidatePath(timestampOutputFolderPath)
+
         withoutStopWordsOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, withoutStopWordsFolderName)
         ValidatePath(withoutStopWordsOutputFolderPath)
 
@@ -309,7 +351,7 @@ for inputFileName in os.listdir(inputDir):
 
         # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
-        fout = SplitMessageFilesBySender(inputTextFilePath, splitMessageOutputFolderPath)
+        fout = SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
 
         # Analysis Steps
         # loops through each individual contact name in the group
