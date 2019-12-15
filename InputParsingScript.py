@@ -7,6 +7,8 @@ from nltk.tokenize import TweetTokenizer
 import string
 import datetime
 import dateutil.parser
+import numpy as np
+import matplotlib.pyplot as plt
 
 # -------------------------------
 # Directories
@@ -26,6 +28,8 @@ timestampFolderName = 'timestamps'
 withoutStopWordsFolderName = 'without_stop_words'
 # Analysis folder: contains final output
 analysisFolderName = 'analysis'
+# Frequency plot folder: contains frequency plot images
+frequencyPlotFolderName = 'frequency_plot'
 
 # -------------------------------
 # Script parameters
@@ -88,6 +92,12 @@ class IndivStats:
 # ===============================
 # Utility functions
 # ===============================
+
+# Function returns day of year as int. The day of year is always found for a leap year.
+def DayOfYear(timeStamp):
+    timeStamp = datetime.datetime(2000, timeStamp.month, timeStamp.day)
+    yday = (timeStamp - datetime.datetime(timeStamp.year, 1, 1)).days + 1
+    return yday
 
 # Check if a directory exists, if not, create it
 def ValidatePath(path):
@@ -286,7 +296,6 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
             validDates += 1
             # Then checks if it has a valid name of sender
             if (isNameValid):
-                validMsg += 1
                 isContinuation = True
                 lastMsgSenderName = name
 
@@ -299,8 +308,10 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
                     timestampfout[name] = open('{}/{}.txt'.format(timestampOutputFolderPath, name), mode='w', encoding='utf8')
                     # initialise contact class object
                     contacts[name] = IndivStats(name, 0, 0, 0)
+                
                 # This is the final check that determines if the message is a valid message, sent by a contact. Deleted messages and invites are ignored here.
                 if (not (IsIgnorableMsg(message))):
+                    validMsg += 1
                     # Message contents are added to splitmsg file
                     splitmsgfout[name].write(message)
                     # Timestamp is added to timestamp file
@@ -308,6 +319,7 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
                     timestampfout[name].write('\n')
                     # Messages count is incremented in contact file
                     contacts[name].IncrementMsgCount(1)
+
             # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
             else:
                 isContinuation = False
@@ -323,6 +335,37 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
         timestampfout[name].close()
     return splitmsgfout
 
+# Reads a text file containing timestamps, and plots a bar graph based on frequency of occurence of timestamps
+# Output is saved to an image file
+# NOTE: currently the function counts frequency on a per day basis. TODO: Add more frequency options
+def FrequencyPlotFromFile(inputFilePath, outputFilePath, frequency = 'day'):
+    # File validation
+    if not ValidateIO(inputFilePath, outputFilePath):
+        return
+
+    # Frequencies of messages sent on a per day basis
+    freqDistTableYearly = np.zeros(366, int)
+
+    # Counting frequencies
+    with open(inputFilePath, 'r', encoding='utf8') as fin:
+        line = fin.readline()
+        while line:
+            # Timestamps are correctly parsed if they are in the standard format for timestamps
+            currentTimeStamp = dateutil.parser.parse(line)
+            # Converted timestamp to an integer value from 1 to 366 depending on day of year, useful for plotting
+            yDay = DayOfYear(currentTimeStamp)
+            freqDistTableYearly[yDay - 1] += 1
+            line = fin.readline()
+    
+    # this is for plotting purpose
+    index = np.arange(1,367)
+    plt.bar(index, freqDistTableYearly)
+    plt.xlabel('Day of Year', fontsize=5)
+    plt.ylabel('No of Messages', fontsize=5)
+    # plt.xticks(index, index, fontsize=5, rotation=30)
+    plt.title('Yearly frequency of messaging')
+    plt.savefig(outputFilePath, dpi = 200)
+    plt.close()
 
 # ===============================
 # Main control loop
@@ -349,8 +392,13 @@ for inputFileName in os.listdir(inputDir):
         analysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
         ValidatePath(analysisOutputFolderPath)
 
+        frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, frequencyPlotFolderName)
+        ValidatePath(frequencyPlotOutputFolderPath)
+
+
         # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
+        # Split Messages folder and Timestamp folder are created by this operation
         fout = SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
 
         # Analysis Steps
@@ -363,3 +411,5 @@ for inputFileName in os.listdir(inputDir):
 
             # Without Stop Words ---> Analysis
             FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name), '{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
+
+            FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name), '{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
