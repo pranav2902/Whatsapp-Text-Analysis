@@ -1,5 +1,0 @@
-happy: 29
-birthday: 21
-bday: 6
-priyansh: 2
-praveen: 2

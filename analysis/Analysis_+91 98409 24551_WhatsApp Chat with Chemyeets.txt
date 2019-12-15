@@ -1,5 +1,0 @@
-happy: 6
-birthday: 6
-asha: 1
-shounak: 1
-bro: 1

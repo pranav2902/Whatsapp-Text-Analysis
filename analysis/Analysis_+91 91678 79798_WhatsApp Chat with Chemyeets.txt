@@ -1,5 +1,0 @@
-happy: 29
-birthday: 26
-thanks: 21
-u: 21
-tom: 17

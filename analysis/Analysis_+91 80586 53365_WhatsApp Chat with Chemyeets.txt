@@ -1,5 +1,0 @@
-selections: 9
-pm: 9
-happy: 7
-ground: 7
-birthday: 6

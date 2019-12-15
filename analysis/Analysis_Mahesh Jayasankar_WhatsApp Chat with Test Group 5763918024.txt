@@ -1,5 +1,0 @@
-xx: 5
-need: 4
-group: 4
-one: 3
-log: 3

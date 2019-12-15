@@ -1,5 +1,0 @@
-happy: 13
-birthday: 13
-alumni: 3
-daa: 2
-guys: 2

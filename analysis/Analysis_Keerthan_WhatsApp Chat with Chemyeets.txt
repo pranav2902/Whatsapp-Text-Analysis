@@ -1,5 +1,0 @@
-happy: 9
-birthday: 8
-yes: 4
-thanks: 2
-1: 2

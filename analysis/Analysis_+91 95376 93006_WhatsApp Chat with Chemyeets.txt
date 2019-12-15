@@ -1,5 +1,0 @@
-class: 51
-one: 36
-slot: 34
-1: 33
-tomorrow: 30

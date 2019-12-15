@@ -1,5 +1,0 @@
-1: 19
-happy: 16
-birthday: 13
-lol: 12
-f: 10

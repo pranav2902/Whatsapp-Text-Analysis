@@ -1,5 +1,0 @@
-guys: 28
-u: 26
-happy: 16
-yeah: 15
-slot: 15

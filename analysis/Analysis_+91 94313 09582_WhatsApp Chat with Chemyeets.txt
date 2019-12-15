@@ -1,5 +1,0 @@
-class: 6
-cre: 6
-today: 3
-renewable: 2
-anyone: 2

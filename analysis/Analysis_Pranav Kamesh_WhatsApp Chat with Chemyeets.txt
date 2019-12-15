@@ -1,5 +1,0 @@
-happy: 22
-birthday: 21
-1: 12
-thanks: 11
-guys: 6

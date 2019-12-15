@@ -1,5 +1,0 @@
-happy: 11
-birthday: 10
-ra: 3
-many: 2
-vamshi: 2

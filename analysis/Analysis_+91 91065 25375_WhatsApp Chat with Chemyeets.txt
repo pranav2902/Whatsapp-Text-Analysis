@@ -1,5 +1,0 @@
-happy: 19
-birthday: 19
-praveen: 2
-registration: 2
-yoga: 1

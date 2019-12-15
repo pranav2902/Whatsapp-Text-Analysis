@@ -1,5 +1,0 @@
-happy: 26
-birthday: 22
-thank: 4
-tnq: 4
-year: 3

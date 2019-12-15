@@ -1,5 +1,0 @@
-happy: 14
-hbd: 11
-birthday: 7
-bday: 6
-1: 5

@@ -1,5 +1,0 @@
-thanks: 7
-class: 5
-guys: 5
-day: 4
-memory: 4

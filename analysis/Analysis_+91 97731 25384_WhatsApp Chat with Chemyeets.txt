@@ -1,5 +1,0 @@
-happy: 25
-birthday: 23
-r: 6
-class: 6
-u: 6

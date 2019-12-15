@@ -1,5 +1,0 @@
-class: 26
-i'm: 22
-someone: 21
-lol: 20
-anyone: 20

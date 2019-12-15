@@ -8,6 +8,9 @@ import string
 import datetime
 import dateutil.parser
 import operator
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 # -------------------------------
 # Directories
@@ -27,6 +30,10 @@ timestampFolderName = 'timestamps'
 withoutStopWordsFolderName = 'without_stop_words'
 # Analysis folder: contains final output
 analysisFolderName = '  Individual analysis'
+analysisFolderName = 'analysis'
+# Frequency plot folder: contains frequency plot images
+frequencyPlotFolderName = 'frequency_plot'
+
 
 # -------------------------------
 # Script parameters
@@ -86,6 +93,15 @@ class IndivStats:
         fin.close()
         fout.close()
 
+# ===============================
+# Utility functions
+# ===============================
+
+# Function returns day of year as int. The day of year is always found for a leap year.
+def DayOfYear(timeStamp):
+    timeStamp = datetime.datetime(2000, timeStamp.month, timeStamp.day)
+    yday = (timeStamp - datetime.datetime(timeStamp.year, 1, 1)).days + 1
+    return yday
 
 class GlobalStats:
     def __init__(self):
@@ -355,6 +371,116 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
         splitmsgfout[name].close()
         timestampfout[name].close()
     return splitmsgfout, timestampfout, contacts
+    
+    fin.close()
+    fout.close()
+
+# Reads a group, and creates a text file for each person who sent messages in the group
+def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOutputFolderPath):
+    # splitmsgfout is a dictionary of all splitmsg output file pointers mapped to the name of the message
+    splitmsgfout = {}
+    # timestampfout is a dictionary of all timestamp output file pointers mapped to the name of the message
+    timestampfout = {}
+    # contacts is a dictionary of all the class objects of IndivStats for the particular chat
+    contacts = {}
+
+    if not ValidateIOf(inputFilePath, msgOutputFolderPath):
+        return
+    ValidatePath(timestampOutputFolderPath)
+
+    # input text file will be opened
+    f = open(inputFilePath, mode='r', encoding='utf8')
+    print('Processing: {}'.format(inputFilePath))
+
+    # Total lines parsed
+    totalMsg = 0
+    # Of which how many had passed the timestamp validation
+    validDates = 0
+    # Of which how many had been actually sent by a person
+    validMsg = 0
+    line = f.readline()
+    # variable that checks whether the current message is a continuation of a previous message
+    isContinuation = False
+    lastMsgSenderName = 'null'
+    while (line):
+        totalMsg += 1
+        (isDateValid, currentMsgDateTime) = ValidateLineDate(line)
+        (isNameValid, name, message) = ValidateLineName(line)
+        # First checks if the message starts with a timestamp
+        if (isDateValid):
+            validDates += 1
+            # Then checks if it has a valid name of sender
+            if (isNameValid):
+                isContinuation = True
+                lastMsgSenderName = name
+
+                # In that case, write the message into the corresponding text file of that sender
+                # If such a text file doesn't exist, initialise the name into the dictionaries and create text file
+                if name not in splitmsgfout:
+                    # initialise splitmsg output file
+                    splitmsgfout[name] = open('{}/{}.txt'.format(msgOutputFolderPath, name), mode='w', encoding='utf8')
+                    # initialse timestamp output file
+                    timestampfout[name] = open('{}/{}.txt'.format(timestampOutputFolderPath, name), mode='w', encoding='utf8')
+                    # initialise contact class object
+                    contacts[name] = IndivStats(name, 0, 0, 0)
+                
+                # This is the final check that determines if the message is a valid message, sent by a contact. Deleted messages and invites are ignored here.
+                if (not (IsIgnorableMsg(message))):
+                    validMsg += 1
+                    # Message contents are added to splitmsg file
+                    splitmsgfout[name].write(message)
+                    # Timestamp is added to timestamp file
+                    timestampfout[name].write(currentMsgDateTime.strftime(TIMESTAMPFORMAT))
+                    timestampfout[name].write('\n')
+                    # Messages count is incremented in contact file
+                    contacts[name].IncrementMsgCount(1)
+
+            # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
+            else:
+                isContinuation = False
+        # If a valid timestamp doesn't exist, it means that the message is a continuation line of previously sent message
+        else:
+            if isContinuation:
+                splitmsgfout[lastMsgSenderName].write(line)
+        line = f.readline()
+    print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(totalMsg, validDates, validMsg))
+    f.close()
+    for name in splitmsgfout:
+        splitmsgfout[name].close()
+        timestampfout[name].close()
+    return splitmsgfout
+
+# Reads a text file containing timestamps, and plots a bar graph based on frequency of occurence of timestamps
+# Output is saved to an image file
+# NOTE: currently the function counts frequency on a per day basis. TODO: Add more frequency options
+def FrequencyPlotFromFile(inputFilePath, outputFilePath, frequency = 'day'):
+    # File validation
+    if not ValidateIO(inputFilePath, outputFilePath):
+        return
+
+    # Frequencies of messages sent on a per day basis
+    freqDistTableYearly = np.zeros(366, int)
+
+    # Counting frequencies
+    with open(inputFilePath, 'r', encoding='utf8') as fin:
+        line = fin.readline()
+        while line:
+            # Timestamps are correctly parsed if they are in the standard format for timestamps
+            currentTimeStamp = dateutil.parser.parse(line)
+            # Converted timestamp to an integer value from 1 to 366 depending on day of year, useful for plotting
+            yDay = DayOfYear(currentTimeStamp)
+            freqDistTableYearly[yDay - 1] += 1
+            line = fin.readline()
+    
+    # this is for plotting purpose
+    index = np.arange(1,367)
+    plt.bar(index, freqDistTableYearly)
+    plt.xlabel('Day of Year', fontsize=5)
+    plt.ylabel('No of Messages', fontsize=5)
+    # plt.xticks(index, index, fontsize=5, rotation=30)
+    plt.title('Yearly frequency of messaging')
+    plt.savefig(outputFilePath, dpi = 200)
+    plt.close()
 
 
 # ===============================
@@ -364,7 +490,6 @@ def SplitMessageNametagTimestamp(inputFilePath, msgOutputFolderPath, timestampOu
 
 for inputFileName in os.listdir(inputDir):
     if inputFileName.endswith('.txt'):
-
 
         # Input file variable names for easy access
         (inputFileNameWithoutExt, inputFileExt) = os.path.splitext(inputFileName)
@@ -377,26 +502,33 @@ for inputFileName in os.listdir(inputDir):
         timestampOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, timestampFolderName)
         ValidatePath(timestampOutputFolderPath)
 
-        withoutStopWordsOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, withoutStopWordsFolderName)
+        withoutStopWordsOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt,
+                                                                       withoutStopWordsFolderName)
         ValidatePath(withoutStopWordsOutputFolderPath)
 
         analysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
         ValidatePath(analysisOutputFolderPath)
 
+        frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, frequencyPlotFolderName)
+        ValidatePath(frequencyPlotOutputFolderPath)
+
         # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
-        splitmsgs,timestamps,contacts = SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
+        # Split Messages folder and Timestamp folder are created by this operation
+        fout = SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
 
         # Analysis Steps
         # loops through each individual contact name in the group
-        for contact_name in splitmsgs:
+        for contact_name in fout:
             # Input Folder ---> Output Folder
 
             # Split Messages ---> Without Stop Words
-            RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name), '{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
+            RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name),
+                            '{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
 
             # Without Stop Words ---> Analysis
-            FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name), '{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
-        for contact_name in contacts:
-            IndivStats.Calculations(inputTextFilePath ,'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
-        GlobalStats.Calcs(contacts, analysisOutputFolderPath)
+            FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),
+                                  '{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
+
+            FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),
+                                  '{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
