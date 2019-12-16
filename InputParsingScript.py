@@ -140,7 +140,6 @@ class GlobalStats(CommonValidationMethods):
         self.ValidatePath(self.individualAnalysisOutputFolderPath)
 
         self.globalAnalysisOutputFilePath = outputDir + '/{}/{}'.format(self.name, globalAnalysisOutputFileName)
-        self.ValidatePath(self.globalAnalysisOutputFilePath)
 
         self.frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(self.name, frequencyPlotFolderName)
         self.ValidatePath(self.frequencyPlotOutputFolderPath)
@@ -175,36 +174,98 @@ class GlobalStats(CommonValidationMethods):
 
     # Check if the message starts with a date in the proper format, also returns datetime if a valid one was found
     def ValidateLineDate(self,linestr):
-        # The first 20 characters of the message correspond to the timestamp
+        # The first 20 characters of the message correspond to the timestamp, in DD/MM/YYYY format
+        # If MM/DD/YY format was used, the character length truncates to less than 19.
         linestr = linestr[0:20]
+        timestamplength = 0
         rcrdDateTime = NULLDATETIME
-        if len(linestr) < 20:
-            return (False, rcrdDateTime)
-        flag = True
-        if (linestr[2] != '/' or linestr[5] != '/'):
-            flag = False
-        if (linestr[10] != ','):
-            flag = False
-        if (linestr[11] != ' ' or linestr[17] != ' ' or linestr[19] != ' '):
-            flag = False
-        if (linestr[14] != ':'):
-            flag = False
-        if (linestr[18] != '-'):
-            flag = False
-        for i in range(20):
-            if (i not in (2, 5, 10, 11, 14, 17, 18, 19)):
-                if (not (linestr[i].isdigit())):
+        # Detect which date format is used
+        # Timestamp has to be at least 10 character long for this
+        if (len(linestr) <= 10):
+            return (False, rcrdDateTime, timestamplength)
+        # In DD/MM/YYYY format, the comma appears at index 10 of the string. This cannot happen in the other case
+        if (linestr[10] == ','):
+            # Date format is DD/MM/YYYY, but we have to do further checks
+            if len(linestr) < 20:
+                return (False, rcrdDateTime, timestamplength)
+            flag = True
+            if (linestr[2] != '/' or linestr[5] != '/'):
+                flag = False
+                return (flag, rcrdDateTime, timestamplength)
+            if (linestr[10] != ','):
+                flag = False
+                return (flag, rcrdDateTime, timestamplength)
+            if (linestr[11] != ' ' or linestr[17] != ' ' or linestr[19] != ' '):
+                flag = False
+                return (flag, rcrdDateTime, timestamplength)
+            if (linestr[14] != ':'):
+                flag = False
+                return (flag, rcrdDateTime, timestamplength)
+            if (linestr[18] != '-'):
+                flag = False
+                return (flag, rcrdDateTime, timestamplength)
+            for i in range(20):
+                if (i not in (2, 5, 10, 11, 14, 17, 18, 19)):
+                    if (not (linestr[i].isdigit())):
+                        flag = False
+                        return (flag, rcrdDateTime, timestamplength)
+            if (flag == True):
+                try:
+                    # parse function reads the timestamp in string form and converts it into a datetime data type
+                    rcrdDateTime = dateutil.parser.parse(linestr[0:17], dayfirst=True)
+                    timestamplength = 20
+                except ValueError:
                     flag = False
-        if (flag == True):
-            # parse function reads the timestamp in string form and converts it into a datetime data type
-            rcrdDateTime = dateutil.parser.parse(linestr[0:17], dayfirst=True)
-        # Returns whether timestamp is valid along with timestamp
-        return (flag, rcrdDateTime)
+            # Returns whether timestamp is valid along with timestamp
+            return (flag, rcrdDateTime, timestamplength)
+        else:
+            # Date format is either MM/DD/YYYY, or the message doesn't contain a timestamp. So we have to be careful and do additional checks
+            # Date format is DD/MM/YYYY, but we have to do further checks
+            if len(linestr) < 16:
+                return (False, rcrdDateTime, timestamplength)
+            # We have to find the hyphen index if it exist as hyphen indicates end of timestamp. The hyphen index can be min 14 or max 16
+            flag = True
+            hyphenIndex = -1
+            for i in range(3):
+                if (14+i >= len(linestr)):
+                    break
+                if linestr[14+i] == '-':
+                    hyphenIndex = 14+i
+                    break
+            # If we didn't find a hyphen, then it's not a timestamp.
+            if (hyphenIndex == -1):
+                return (False, rcrdDateTime, timestamplength)
+            # Now that we found a hyphen, the timestamp can be atmost 15 characters long. So we reduce to that size
+            linestr = linestr[0:15]
+            # First index should be a digit
+            if not(linestr[0].isdigit()):
+                return (False, rcrdDateTime, timestamplength)
+            # Indices 1,2 are either /,digit or digit,/
+            if (not((linestr[1] == '/' and linestr[2].isdigit()) or (linestr[2] == '/' and linestr[1].isdigit()))):
+                return (False, rcrdDateTime, timestamplength)
+            # Indices 1,2 are either /,digit or digit,/
+            if (not((linestr[1] == '/' and linestr[2].isdigit()) or (linestr[2] == '/' and linestr[1].isdigit()))):
+                return (False, rcrdDateTime, timestamplength)
 
+            # Other timestamp parameters to be written here. You can look for the comma, colon, and other digits but I'm directly using try catch for this
+            if (flag == True):
+                try:
+                    # parse function reads the timestamp in string form and converts it into a datetime data type
+                    rcrdDateTime = dateutil.parser.parse(linestr, dayfirst=False)
+                    timestamplength = 18
+                    if rcrdDateTime.day < 10:
+                        timestamplength -= 1
+                    if rcrdDateTime.month < 10:
+                        timestamplength -= 1
+                except ValueError:
+                    flag = False
+            # Returns whether timestamp is valid along with timestamp
+            return (flag, rcrdDateTime, timestamplength)
+    
     # Check whether the message was sent by someone. Meaning it is of the format "person_name: Message".
-    def ValidateLineName(self,linestr):
-        # The first 20 characters of the message correspond to the timestamp
-        linestr = linestr[20:]
+    def ValidateLineName(self,linestr, timestamplength):
+        # The characters that correspond to the timestamp are omitted
+        linestr = linestr[timestamplength:]
         name_length = 0
         flag = False
         # Searches for a semicolon to indicate where the message starts
@@ -281,8 +342,8 @@ class GlobalStats(CommonValidationMethods):
         lastMsgSenderName = 'null'
         while (line):
             totalMsg += 1
-            (isDateValid, currentMsgDateTime) = self.ValidateLineDate(line)
-            (isNameValid, name, message) = self.ValidateLineName(line)
+            (isDateValid, currentMsgDateTime, timestamplength) = self.ValidateLineDate(line)
+            (isNameValid, name, message) = self.ValidateLineName(line, timestamplength)
             # First checks if the message starts with a timestamp
             if (isDateValid):
                 validDates += 1
