@@ -29,7 +29,7 @@ timestampFolderName = 'timestamps'
 # Without stop words folder: contains step 2 of output
 withoutStopWordsFolderName = 'without_stop_words'
 # Analysis folder: contains final output
-analysisFolderName = '  Individual analysis'
+analysisFolderName = 'Individual analysis'
 # Frequency plot folder: contains frequency plot images
 frequencyPlotFolderName = 'frequency_plot'
 
@@ -64,7 +64,7 @@ class GlobalStats:
         return
 
     def Calcs(self, contacts, outputFolderPath):
-        fout = open("{}/OverallStats.txt".format(outputFolderPath),mode = "w",encoding="utf8")
+        fout = open(outputFolderPath,mode = "w",encoding="utf8")
         sumTM = 0
         NamesandMsgs = {}
         avgwords = {}
@@ -73,16 +73,17 @@ class GlobalStats:
             fout.write("\n {} ".format(name))
             NamesandMsgs[name] = contacts[name].TotalMessages
             avgwords[name] = contacts[name].AvgWords
-        TopNamesAndMsgs = dict(sorted(NamesandMsgs.iteritems(), key=operator.itemgetter(1), reverse=True)[:5])
-        TopAvgWords = dict(sorted(avgwords.iteritems(), key=operator.itemgetter(1), reverse=True)[:5])
+        print(NamesandMsgs.items())
+        TopNamesAndMsgs = dict(sorted(NamesandMsgs.items(), key=operator.itemgetter(1), reverse=True)[:5])
+        TopAvgWords = dict(sorted(avgwords.items(), key=operator.itemgetter(1), reverse=True)[:5])
         sumTM = sum(NamesandMsgs.values())
-        fout.write("\n The total messages sent in this chat are {}".format(sumTM))
-        fout.write("\n The top 5 message senders in this chat are : ")
-        for key,value in TopNamesAndMsgs:
-            fout.write("\n {} : {}".format(key,value))
-        fout.write("\n\n\n The top 5 users who write the most number of words per message are : ")
-        for key,value in TopAvgWords:
-            fout.write("\n {} : {}".format(key,value))
+        fout.write("\n\nThe total messages sent in this chat are {}".format(sumTM))
+        fout.write("\n\nThe top message senders in this chat are : ")
+        for key,value in TopNamesAndMsgs.items():
+            fout.write("\n{} : {}".format(key,value))
+        fout.write("\n\nThe top users who write the most number of words per message are : ")
+        for key,value in TopAvgWords.items():
+            fout.write("\n{} : {}".format(key,value))
         fout.close()
 
 
@@ -102,22 +103,25 @@ class IndivStats:
 
     def Calculations(self,inputFilePath,outputFilePath):
         fin = open(inputFilePath,mode='r',encoding="utf8")
-        fout = open(outputFilePath,mode = 'w',encoding = "utf8")
-        words = fin.read().split()
-        self.WordCount = len(words)
+        fout = open(outputFilePath,mode = 'a',encoding = "utf8")
+        self.WordCount = 0
         count = 0
         line = fin.readline()
         while(line):
             (x,nam,message) = self.ValidateLineName(line)
+            words = message.split()
+            self.WordCount += len(words)
             if x and self.name == nam:
                 count += 1
+            line = fin.readline()
         self.TotalMessages = count
         self.AvgWords = round(self.WordCount / self.TotalMessages)
-        fout.write("\n The Total number of words sent by {} is {}".format(self.name,self.WordCount))
-        fout.write("\n The Total number of messages sent by {} is {}".format(self.name, self.TotalMessages))
-        fout.write("\n The Average number of words sent by {} per message is {}".format(self.name, self.AvgWords))
+        fout.write("\n\nThe Total number of words sent by {} is {}".format(self.name,self.WordCount))
+        fout.write("\n\nThe Total number of messages sent by {} is {}".format(self.name, self.TotalMessages))
+        fout.write("\n\nThe Average number of words sent by {} per message is {}".format(self.name, self.AvgWords))
         fin.close()
         fout.close()
+        return self.WordCount,self.TotalMessages,self.AvgWords
 
     # ===============================
     # Utility functions
@@ -235,10 +239,11 @@ class IndivStats:
 
         # Input from fin, output in fout
         fout = open(outputFilePath, mode='w', encoding='utf8')
+        fout.write("The top 5 words used by the user are :\n\n")
         with open(inputFilePath, 'r', encoding='utf8') as fin:
             coun = Counter(fin.read().split())
             for word, count in coun.most_common(5):
-                fout.write('%s: %d\n' % (word, count))
+                fout.write('%s : %d\n' % (word, count))
         fout.close()
         print('Analysis complete. Output stored in {}'.format(outputFilePath))
 
@@ -353,8 +358,7 @@ class IndivStats:
                         # Timestamp is added to timestamp file
                         timestampfout[name].write(currentMsgDateTime.strftime(TIMESTAMPFORMAT))
                         timestampfout[name].write('\n')
-                        # Messages count is incremented in contact file
-                        contacts[name].IncrementMsgCount(1)
+
 
                 # If a valid timestamp exist but a valid name does not, then whatever message comes next cannot be a continuation
                 else:
@@ -370,7 +374,7 @@ class IndivStats:
         for name in splitmsgfout:
             splitmsgfout[name].close()
             timestampfout[name].close()
-        return splitmsgfout
+        return splitmsgfout,timestampfout,contacts
 
         # Reads a text file containing timestamps, and plots a bar graph based on frequency of occurence of timestamps
         # Output is saved to an image file
@@ -439,11 +443,11 @@ for inputFileName in os.listdir(inputDir):
         # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
         # Split Messages folder and Timestamp folder are created by this operation
-        fout = IndivStats().SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
+        splitMsgFout,timeStampFout,Contacts = IndivStats().SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
 
         # Analysis Steps
         # loops through each individual contact name in the group
-        for contact_name in fout:
+        for contact_name in Contacts:
             # Input Folder ---> Output Folder
 
             # Split Messages ---> Without Stop Words
@@ -451,5 +455,10 @@ for inputFileName in os.listdir(inputDir):
 
             # Without Stop Words ---> Analysis
             IndivStats().FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
-
+            WordCount, TotMsg, AvgWords = IndivStats(contact_name,0,0,0).Calculations(inputTextFilePath,'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
+            Contacts[contact_name].WordCount = WordCount
+            Contacts[contact_name].TotalMessages = TotMsg
+            Contacts[contact_name].AvgWords = AvgWords
             IndivStats().FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),'{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
+
+        GlobalStats().Calcs(Contacts,'{}/Overall Chat Statistics.txt'.format(analysisOutputFolderPath))
