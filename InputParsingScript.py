@@ -88,7 +88,7 @@ class GlobalStats:
 
 class IndivStats:
 
-    def __init__(self,name,AvgWords,TotalMessages,WordCount):
+    def __init__(self,name = 'null',AvgWords = 0,TotalMessages = 0,WordCount = 0):
         self.AvgWords = AvgWords
         self.TotalMessages = TotalMessages
         self.WordCount = WordCount
@@ -421,25 +421,25 @@ for inputFileName in os.listdir(inputDir):
 
         # Definition of local file directories, these are unique for a particular group chat
         splitMessageOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, splitMsgFolderName)
-        IndivStats.ValidatePath(splitMessageOutputFolderPath)
+        IndivStats().ValidatePath(splitMessageOutputFolderPath)
 
         timestampOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, timestampFolderName)
-        IndivStats.ValidatePath(timestampOutputFolderPath)
+        IndivStats().ValidatePath(timestampOutputFolderPath)
 
         withoutStopWordsOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt,
                                                                        withoutStopWordsFolderName)
-        IndivStats.ValidatePath(withoutStopWordsOutputFolderPath)
+        IndivStats().ValidatePath(withoutStopWordsOutputFolderPath)
 
         analysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
-        IndivStats.ValidatePath(analysisOutputFolderPath)
+        IndivStats().ValidatePath(analysisOutputFolderPath)
 
         frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, frequencyPlotFolderName)
-        IndivStats.ValidatePath(frequencyPlotOutputFolderPath)
+        IndivStats().ValidatePath(frequencyPlotOutputFolderPath)
 
         # Processing Steps
         # fout is a dictionary of all file pointers mapped to the name of the message
         # Split Messages folder and Timestamp folder are created by this operation
-        fout = IndivStats.SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
+        fout = IndivStats().SplitMessageNametagTimestamp(inputTextFilePath, splitMessageOutputFolderPath, timestampOutputFolderPath)
 
         # Analysis Steps
         # loops through each individual contact name in the group
@@ -447,9 +447,9 @@ for inputFileName in os.listdir(inputDir):
             # Input Folder ---> Output Folder
 
             # Split Messages ---> Without Stop Words
-            IndivStats.RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name),'{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
+            IndivStats().RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name),'{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
 
             # Without Stop Words ---> Analysis
-            IndivStats.FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
+            IndivStats().FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
 
-            IndivStats.FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),'{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
+            IndivStats().FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),'{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
