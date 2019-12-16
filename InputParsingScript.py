@@ -32,8 +32,10 @@ withoutStopWordsFolderName = 'without_stop_words'
 analysisFolderName = 'individual_analysis'
 # Frequency plot folder: contains frequency plot images
 frequencyPlotFolderName = 'frequency_plot'
+
 # file names: file names are given with extensions
 globalAnalysisOutputFileName = 'Overall Chat Statistics.txt'
+globalBarGraphFileName = 'bar_graph_day_of_year.png'
 
 # -------------------------------
 # Script parameters
@@ -110,7 +112,7 @@ class CommonValidationMethods:
 class GlobalStats(CommonValidationMethods):
     def __init__(self, name):
         self.name = name
-        contacts = {}
+        self.contacts = {}
         self.inputFilePath = 'null'
         self.outputFolderPath = 'null'
         self.splitMessageOutputFolderPath = 'null'
@@ -119,6 +121,7 @@ class GlobalStats(CommonValidationMethods):
         self.individualAnalysisOutputFolderPath = 'null'
         self.globalAnalysisOutputFilePath = 'null'
         self.frequencyPlotOutputFolderPath = 'null'
+        self.globalFrequencyPlotOutputFilePath = ' null'
 
     def SetFilePaths(self, inputFilePath):
         self.inputFilePath = inputFilePath
@@ -141,6 +144,8 @@ class GlobalStats(CommonValidationMethods):
 
         self.frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(self.name, frequencyPlotFolderName)
         self.ValidatePath(self.frequencyPlotOutputFolderPath)
+
+        self.globalFrequencyPlotOutputFilePath = outputDir + '/{}/{}'.format(self.name, globalBarGraphFileName)
         
     def Calculations(self):
         # Processing Steps
@@ -325,19 +330,35 @@ class GlobalStats(CommonValidationMethods):
         return contacts
 
     def WriteOverallGroupChatOutput(self):
+        
         fout = open(self.globalAnalysisOutputFilePath,mode = "w",encoding="utf8")
+        
+        # Initialising data variables
         totalMessagesSum = 0
         namesAndMsgs = {}
         avgWords = {}
+        totalChatWordsCounter = Counter()
+        groupFreqDistTableYearly = np.zeros(366, int)
+
+
         print("Performing overall analysis on group chat: {}".format(self.name))
         fout.write("The list of people in this chat are \n")
         for name in self.contacts:
-            fout.write("\n {} ".format(name))
+            fout.write("\n{} ".format(name))
             namesAndMsgs[name] = self.contacts[name].totalMessages
             avgWords[name] = self.contacts[name].avgWords
+            groupFreqDistTableYearly = np.add(groupFreqDistTableYearly,self.contacts[name].freqDistTableYearly)
+            totalChatWordsCounter += self.contacts[name].allWordCounts
+        # namesAndMsgs will contain a dict of contact names mapped to total messages sent by them. This function will find top 5 of those names based on messages sent
         topNamesAndMsgs = dict(sorted(namesAndMsgs.items(), key=operator.itemgetter(1), reverse=True)[:5])
+        # avgWords will contain a dict of contact names mapped to average words per message. This function will find top 5 f those names based on average words per message.
         topAvgWords = dict(sorted(avgWords.items(), key=operator.itemgetter(1), reverse=True)[:5])
+        # totalMessagesSum adds all the totalMessages values of each individual contact
         totalMessagesSum = sum(namesAndMsgs.values())
+        # groupAverageMessages finds average messages sent in group per day
+        groupAverageMessages = round(np.mean(groupFreqDistTableYearly), floatDigitsAfterDecimal)
+
+        # All totals and averages have been calculated. Now to write the rest of the data into the output file
         fout.write("\n\nThe total messages sent in this chat are {}".format(totalMessagesSum))
         fout.write("\n\nThe top message senders in this chat are : ")
         for key,value in topNamesAndMsgs.items():
@@ -345,7 +366,22 @@ class GlobalStats(CommonValidationMethods):
         fout.write("\n\nThe top users who write the most number of words per message are : ")
         for key,value in topAvgWords.items():
             fout.write("\n{} : {}".format(key,value))
+        fout.write("\n\nThe average number of messages sent per day over the year are {}".format(groupAverageMessages))
+        fout.write("\n\nThe top 5 most used words in the chat are:")
+        for word, count in totalChatWordsCounter.most_common(5):
+                fout.write('\n%s : %d' % (word, count))
         fout.close()
+
+        # this is for plotting purpose
+        index = np.arange(1, 367)
+        plt.bar(index, groupFreqDistTableYearly)
+        plt.xlabel('Day of Year', fontsize=5)
+        plt.ylabel('No of Messages', fontsize=5)
+        # plt.xticks(index, index, fontsize=5, rotation=30)
+        plt.title('Yearly frequency of messaging')
+        plt.savefig(self.globalFrequencyPlotOutputFilePath, dpi=200)
+        plt.close()
+
         print("Overall Analysis complete.")
 
 # Class used for storing and maintaining data of individual contact members in a particular group chat.
@@ -358,11 +394,14 @@ class IndivStats(CommonValidationMethods):
         self.totalMessages = totalMessages
         self.wordCount = wordCount
         self.name = name
+        self.allWordCounts = Counter()
+        self.freqDistTableYearly = np.zeros(366, int)
         self.splitMessageOutputFilePath = 'null'
         self.timestampOutputFilePath = 'null'
         self.withoutStopWordsOutputFilePath = 'null'
         self.individualAnalysisOutputFilePath = 'null'
         self.frequencyPlotOutputFilePath = 'null'
+        
         
     # Setting the output file paths, so the object can access its respective output files easily
     def SetFilePaths(self, splitMessageOutputFilePath, timestampOutputFilePath, withoutStopWordsOutputFilePath, individualAnalysisOutputFilePath, frequencyPlotOutputFilePath):
@@ -417,8 +456,8 @@ class IndivStats(CommonValidationMethods):
         fout = open(self.individualAnalysisOutputFilePath, mode='w', encoding='utf8')
         fout.write("The top 5 words used by the user are :\n\n")
         with open(self.withoutStopWordsOutputFilePath, 'r', encoding='utf8') as fin:
-            coun = Counter(fin.read().split())
-            for word, count in coun.most_common(5):
+            self.allWordCounts = Counter(fin.read().split())
+            for word, count in self.allWordCounts.most_common(5):
                 fout.write('%s : %d\n' % (word, count))
         fout.close()
         print('Analysis complete. Output stored in {}'.format(self.individualAnalysisOutputFilePath))
@@ -480,7 +519,7 @@ class IndivStats(CommonValidationMethods):
             return -1
 
         # Frequencies of messages sent on a per day basis
-        freqDistTableYearly = np.zeros(366, int)
+        self.freqDistTableYearly = np.zeros(366, int)
 
         # Counting frequencies
         with open(self.timestampOutputFilePath, 'r', encoding='utf8') as fin:
@@ -492,12 +531,12 @@ class IndivStats(CommonValidationMethods):
                 currentTimeStamp = dateutil.parser.parse(line)
                 # Converted timestamp to an integer value from 1 to 366 depending on day of year, useful for plotting
                 yDay = self.DayOfYear(currentTimeStamp)
-                freqDistTableYearly[yDay - 1] += 1
+                self.freqDistTableYearly[yDay - 1] += 1
                 line = fin.readline()
 
         # this is for plotting purpose
         index = np.arange(1, 367)
-        plt.bar(index, freqDistTableYearly)
+        plt.bar(index, self.freqDistTableYearly)
         plt.xlabel('Day of Year', fontsize=5)
         plt.ylabel('No of Messages', fontsize=5)
         # plt.xticks(index, index, fontsize=5, rotation=30)
