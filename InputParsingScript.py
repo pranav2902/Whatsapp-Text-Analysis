@@ -457,10 +457,7 @@ for inputFileName in os.listdir(inputDir):
 
             # Without Stop Words ---> Analysis
             IndivStats().FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(IndivanalysisOutputFolderPath, contact_name))
-            WordCount, TotMsg, AvgWords = IndivStats(contact_name,0,0,0).Calculations(inputTextFilePath,'{}/{}.txt'.format(IndivanalysisOutputFolderPath, contact_name))
-            Contacts[contact_name].WordCount = WordCount
-            Contacts[contact_name].TotalMessages = TotMsg
-            Contacts[contact_name].AvgWords = AvgWords
+            Contacts[contact_name].Calculations(inputTextFilePath,'{}/{}.txt'.format(IndivanalysisOutputFolderPath, contact_name))
             IndivStats().FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),'{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
 
         GlobalStats().Calcs(Contacts,'{}/Overall Chat Statistics.txt'.format(GlobalAnalysisOutputPath))
