@@ -434,8 +434,10 @@ for inputFileName in os.listdir(inputDir):
                                                                        withoutStopWordsFolderName)
         IndivStats().ValidatePath(withoutStopWordsOutputFolderPath)
 
-        analysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
-        IndivStats().ValidatePath(analysisOutputFolderPath)
+        IndivanalysisOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, analysisFolderName)
+        IndivStats().ValidatePath(IndivanalysisOutputFolderPath)
+
+        GlobalAnalysisOutputPath = outputDir + '/{}'.format(inputFileNameWithoutExt)
 
         frequencyPlotOutputFolderPath = outputDir + '/{}/{}'.format(inputFileNameWithoutExt, frequencyPlotFolderName)
         IndivStats().ValidatePath(frequencyPlotOutputFolderPath)
@@ -454,11 +456,11 @@ for inputFileName in os.listdir(inputDir):
             IndivStats().RemoveStopWords('{}/{}.txt'.format(splitMessageOutputFolderPath, contact_name),'{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name))
 
             # Without Stop Words ---> Analysis
-            IndivStats().FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
-            WordCount, TotMsg, AvgWords = IndivStats(contact_name,0,0,0).Calculations(inputTextFilePath,'{}/{}.txt'.format(analysisOutputFolderPath, contact_name))
+            IndivStats().FindWordCountFromFile('{}/{}.txt'.format(withoutStopWordsOutputFolderPath, contact_name),'{}/{}.txt'.format(IndivanalysisOutputFolderPath, contact_name))
+            WordCount, TotMsg, AvgWords = IndivStats(contact_name,0,0,0).Calculations(inputTextFilePath,'{}/{}.txt'.format(IndivanalysisOutputFolderPath, contact_name))
             Contacts[contact_name].WordCount = WordCount
             Contacts[contact_name].TotalMessages = TotMsg
             Contacts[contact_name].AvgWords = AvgWords
             IndivStats().FrequencyPlotFromFile('{}/{}.txt'.format(timestampOutputFolderPath, contact_name),'{}/{}.png'.format(frequencyPlotOutputFolderPath, contact_name))
 
-        GlobalStats().Calcs(Contacts,'{}/Overall Chat Statistics.txt'.format(analysisOutputFolderPath))
+        GlobalStats().Calcs(Contacts,'{}/Overall Chat Statistics.txt'.format(GlobalAnalysisOutputPath))
