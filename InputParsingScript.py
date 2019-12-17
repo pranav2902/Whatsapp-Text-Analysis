@@ -113,6 +113,7 @@ class GlobalStats(CommonValidationMethods):
     def __init__(self, name):
         self.name = name
         self.contacts = {}
+        self.chatAge = 1
         self.inputFilePath = 'null'
         self.outputFolderPath = 'null'
         self.splitMessageOutputFolderPath = 'null'
@@ -150,7 +151,11 @@ class GlobalStats(CommonValidationMethods):
         # Processing Steps
         # The Contacts is a dictionary of all IndivStats mapped to their name
         # Split Messages folder and Timestamp folder are created by this operation
-        self.contacts = self.SplitMessageNametagTimestamp()
+        self.contacts, self.chatAge = self.SplitMessageNametagTimestamp()
+
+        # chatAge has to be greater than or equal to 1
+        if self.chatAge < 1:
+            self.chatAge = 1
 
         # Analysis Steps
         # loops through each individual contact name in the group
@@ -165,7 +170,7 @@ class GlobalStats(CommonValidationMethods):
             self.contacts[contactName].SetFilePaths(splitMessageOutputFilePath, timestampOutputFilePath, withoutStopWordsOutputFilePath, individualAnalysisOutputFilePath, frequencyPlotOutputFilePath)
 
             # Calculations performed on the object, its Individual Analysis is performed and all relevant files are created
-            self.contacts[contactName].Calculations()
+            self.contacts[contactName].IndividualCalculations()
         self.WriteOverallGroupChatOutput()
 
     # ===============================
@@ -214,6 +219,7 @@ class GlobalStats(CommonValidationMethods):
                     # parse function reads the timestamp in string form and converts it into a datetime data type
                     rcrdDateTime = dateutil.parser.parse(linestr[0:17], dayfirst=True)
                     timestamplength = 20
+                # If the timestamp could not be parsed, the parser throws a ValueError exception
                 except ValueError:
                     flag = False
             # Returns whether timestamp is valid along with timestamp
@@ -248,15 +254,20 @@ class GlobalStats(CommonValidationMethods):
                 return (False, rcrdDateTime, timestamplength)
 
             # Other timestamp parameters to be written here. You can look for the comma, colon, and other digits but I'm directly using try catch for this
+            # We need to remove the hyphen from the timestamp otherwise it will not parse.
+            linestr = self.RemoveCharacters(linestr, '-')
+
             if (flag == True):
                 try:
                     # parse function reads the timestamp in string form and converts it into a datetime data type
                     rcrdDateTime = dateutil.parser.parse(linestr, dayfirst=False)
                     timestamplength = 18
+                    # Time stamp length reduces from 18 to 17 to 16 if date and month are single digit
                     if rcrdDateTime.day < 10:
                         timestamplength -= 1
                     if rcrdDateTime.month < 10:
                         timestamplength -= 1
+                # If the timestamp could not be parsed, the parser throws a ValueError exception
                 except ValueError:
                     flag = False
             # Returns whether timestamp is valid along with timestamp
@@ -322,6 +333,10 @@ class GlobalStats(CommonValidationMethods):
         # contacts is a dictionary of all the class objects of IndivStats for the particular chat
         contacts = {}
 
+        startTimeStampHasBeenFound = False
+        startTimeStamp = NULLDATETIME
+        endTimeStamp = NULLDATETIME
+
         if not self.ValidateIOf(self.inputFilePath, self.splitMessageOutputFolderPath):
             return
         self.ValidatePath(self.timestampOutputFolderPath)
@@ -346,6 +361,9 @@ class GlobalStats(CommonValidationMethods):
             (isNameValid, name, message) = self.ValidateLineName(line, timestamplength)
             # First checks if the message starts with a timestamp
             if (isDateValid):
+                if not startTimeStampHasBeenFound:
+                    startTimeStampHasBeenFound = True
+                    startTimeStamp = currentMsgDateTime
                 validDates += 1
                 # Then checks if it has a valid name of sender
                 if (isNameValid):
@@ -381,14 +399,16 @@ class GlobalStats(CommonValidationMethods):
             else:
                 if isContinuation:
                     splitmsgfout[lastMsgSenderName].write(line)
+            endTimeStamp = currentMsgDateTime
             line = f.readline()
         print('Processing finished. {} lines parsed. {} valid timestamps discovered. {} valid messages found.'.format(
             totalMsg, validDates, validMsg))
         f.close()
+        noOfDaysOfChat = (endTimeStamp - startTimeStamp).days + 1
         for name in splitmsgfout:
             splitmsgfout[name].close()
             timestampfout[name].close()
-        return contacts
+        return contacts, noOfDaysOfChat
 
     def WriteOverallGroupChatOutput(self):
         
@@ -416,8 +436,8 @@ class GlobalStats(CommonValidationMethods):
         topAvgWords = dict(sorted(avgWords.items(), key=operator.itemgetter(1), reverse=True)[:5])
         # totalMessagesSum adds all the totalMessages values of each individual contact
         totalMessagesSum = sum(namesAndMsgs.values())
-        # groupAverageMessages finds average messages sent in group per day
-        groupAverageMessages = round(np.mean(groupFreqDistTableYearly), floatDigitsAfterDecimal)
+        # groupAverageMessages finds average messages sent in group
+        groupAverageMessages = round(totalMessagesSum / self.chatAge, floatDigitsAfterDecimal)
 
         # All totals and averages have been calculated. Now to write the rest of the data into the output file
         fout.write("\n\nThe total messages sent in this chat are {}".format(totalMessagesSum))
@@ -427,7 +447,7 @@ class GlobalStats(CommonValidationMethods):
         fout.write("\n\nThe top users who write the most number of words per message are : ")
         for key,value in topAvgWords.items():
             fout.write("\n{} : {}".format(key,value))
-        fout.write("\n\nThe average number of messages sent per day over the year are {}".format(groupAverageMessages))
+        fout.write("\n\nThe average number of messages sent per day over chat's lifetime {}".format(groupAverageMessages))
         fout.write("\n\nThe top 5 most used words in the chat are:")
         for word, count in totalChatWordsCounter.most_common(5):
                 fout.write('\n%s : %d' % (word, count))
@@ -473,7 +493,7 @@ class IndivStats(CommonValidationMethods):
         self.frequencyPlotOutputFilePath = frequencyPlotOutputFilePath
 
 
-    def Calculations(self):
+    def IndividualCalculations(self):
         # Input Folder ---> Output Folder
 
         # Split Messages ---> Without Stop Words
