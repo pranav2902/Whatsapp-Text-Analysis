@@ -506,8 +506,11 @@ class IndivStats(CommonValidationMethods):
         # Timestamps ---> Frequency Plots
         # This function is also used to calculate total number of messages, as it handles all timestamps of messages sent by the contact
         self.totalMessages = self.FrequencyPlotFromFile()
-        
-        self.avgWords = round((self.wordCount / self.totalMessages), floatDigitsAfterDecimal)
+        # To avoid division by zero
+        if self.totalMessages == 0:
+            self.avgWords = 0
+        else:
+            self.avgWords = round((self.wordCount / self.totalMessages), floatDigitsAfterDecimal)
 
         # Adding the rest of the data to the Individual Analysis file
         fout = open(self.individualAnalysisOutputFilePath, mode = 'a',encoding = "utf8")
