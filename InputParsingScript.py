@@ -180,7 +180,7 @@ class GlobalStats(CommonValidationMethods):
     # Check if the message starts with a date in the proper format, also returns datetime if a valid one was found
     def ValidateLineDate(self,linestr):
         # The first 20 characters of the message correspond to the timestamp, in DD/MM/YYYY format
-        # If MM/DD/YY format was used, the character length truncates to less than 19.
+        # If (M)M/(D)D/YY format was used, the character length truncates to less than 19.
         linestr = linestr[0:20]
         timestamplength = 0
         rcrdDateTime = NULLDATETIME
@@ -224,6 +224,24 @@ class GlobalStats(CommonValidationMethods):
                     flag = False
             # Returns whether timestamp is valid along with timestamp
             return (flag, rcrdDateTime, timestamplength)
+        # Check if DD/MM/YY xx:yy a/pm format
+        elif ((len(linestr) >= 18) and (linestr[16] == 'm' or linestr[17] == 'm')):
+            flag = True
+            hyphenIndex = linestr.find('-', 0, 21)
+            if (hyphenIndex == -1):
+                return (False, rcrdDateTime, timestamplength)
+            linestr = linestr[:hyphenIndex]
+            try:
+                # parse function reads the timestamp in string form and converts it into a datetime data type
+                rcrdDateTime = dateutil.parser.parse(linestr, dayfirst=False)
+                timestamplength = hyphenIndex + 2
+            # If the timestamp could not be parsed, the parser throws a ValueError exception
+            except ValueError:
+                flag = False
+        # Returns whether timestamp is valid along with timestamp
+            return (flag, rcrdDateTime, timestamplength)
+
+            
         else:
             # Date format is either MM/DD/YYYY, or the message doesn't contain a timestamp. So we have to be careful and do additional checks
             # Date format is DD/MM/YYYY, but we have to do further checks
